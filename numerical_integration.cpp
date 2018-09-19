@@ -1,4 +1,4 @@
-#include "numerical-integration.hpp"
+#include "numerical_integration.hpp"
 #include <functional>
 
 double euler(double ytm1, std::function<double (double)> dydt, double t, double h){
