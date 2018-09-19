@@ -1,2 +1,9 @@
-double euler(double y0, double dydt_0, double h); 
-/* computes euler's method: y0 + dydt_o * h */
+#ifndef Graph_hpp
+#define Graph_hpp
+
+#include <functional>
+
+double euler(double ytm1, std::function<double (double)> dydt, double t, double h); 
+/* computes euler's method: yn = yn-1 + fn * h */
+
+#endif /* Graph_hpp */
