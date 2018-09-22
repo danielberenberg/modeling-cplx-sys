@@ -1,4 +1,4 @@
-#include "numerical-integration.hpp"
+#include "numerical_integration.hpp"
 #include <iostream>
 
 double dydt(double t){
