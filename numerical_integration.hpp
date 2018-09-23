@@ -6,7 +6,7 @@
 
 typedef std::function<double (double,double)> Derivative;
 typedef std::function<double (double, double, double, Derivative)> Solver;
-typedef std::vector<std::vector<double>> fn;
+typedef std::vector<std::vector<double>> fn; // pointwise function -- vector of len = 2 vectors (t, F(t))
 
 double euler(double yi, double ti, double h, Derivative dydt);
 /* computes euler's method: yn = yn-1 + fn * h */
