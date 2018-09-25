@@ -14,4 +14,13 @@ double euler(double yi, double ti, double h, Derivative dydt);
 double heun(double yi, double ti, double h, Derivative dydt);
 /* computes heun's method = rk2 */
 
+fn approximate(const double y0, const double h, const int T, Derivative dydt, Solver solver);
+/* use an integral solver in {euler, heun} to approximate int(dydt) */
+
+fn rk1(const double y0, const double h, const int T, Derivative dydt);
+/* approximate int(dydt) from t=0 ... T using euler's */
+
+fn rk2(const double y0, const double h, const int T, Derivative dydt);
+/* approximate int(dydt) from t=0 ... T using heun's */
+
 #endif
