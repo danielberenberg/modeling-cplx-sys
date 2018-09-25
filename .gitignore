@@ -1,3 +1,7 @@
 *.swp
 *.ipynb_checkpoints
-
+*.aux
+*.pdf
+*.gz
+*.out
+*.log
