@@ -1,0 +1,160 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[top=1.3in,bottom=1in,right=1in,left=1in,headheight=30pt]{geometry}
+
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ...
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{pdfpages}
+\usepackage{pgfplots, xcolor}
+\usepackage{amsmath,amsthm,amssymb,amsfonts} 	%Prooflandia
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\makeatother
+\usepackage{pifont}
+\usepackage{marvosym, wasysym, graphicx, wrapfig, placeins, subcaption, booktabs}
+ \usepackage{cancel, framed, topcapt}
+ \usepackage{tikz, pgfplots, pifont}
+ \usepackage [autostyle, english = american]{csquotes}
+	\MakeOuterQuote{"}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Modeling Complex Systems --- CSYS/CS 302\\
+Assignment 01  \\
+Date: \today
+} %%%%%%%%%%%% PUT IN ASSIGNMENT # %%%%%%%%%%%%
+\rhead{Sarah Howerter\\
+Daniel Berenberg}
+\cfoot{\thepage}
+
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+            citecolor=blue, urlcolor=blue]{hyperref}
+            \usepackage{color}
+            \definecolor{dkgreen}{rgb}{0,0.6,0}
+            \definecolor{gray}{rgb}{0.5,0.5,0.5}
+            \definecolor{mauve}{rgb}{0.58,0,0.82}
+            \usepackage{listings}
+            \lstset{frame=tb,
+              language=python,
+              aboveskip=3mm,
+              belowskip=3mm,
+              showstringspaces=false,
+              columns=flexible,
+              basicstyle={\footnotesize\ttfamily},
+              numbers=none,
+              numberstyle=\tiny\color{gray},
+              keywordstyle=\color{blue},
+              commentstyle=\color{dkgreen},
+              stringstyle=\color{mauve},
+              breaklines=true,
+              breakatwhitespace=true,
+              tabsize=3
+            }
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\bt}{$\bullet$}
+\newcommand{\cmdin}{$>$}
+\newcommand{\cmdout}{[1]}
+%SetFonts
+%\, = insert small space
+%\textrm{} = sets to text form inside math land
+%SetFonts
+
+\newcommand{\prob}[2]{
+\indent \\
+\noindent{\color{green!50!blue}\bf {\large#1.}}
+
+\vspace{1mm}
+\indent {\normalfont #3}
+}
+\newcommand{\Prob}{\textrm{{\bf Pr}}}
+
+\begin{document}
+\prob{1 }{See code. File * line *.}
+
+\prob{2}{}
+	% \begin{figure}[h!]
+	% 	\centering
+	% 	\label{9_Lotka-Volterra_plots}
+	% 	\begin{tabular}{lll}
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		\\
+	% 		(a) & (b) & (c)
+	% 		\\
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		\\
+	% 		(d) & (e) & (f)
+	% 		\\
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		&
+	% 		\includegraphics[width=0.33\textwidth]{}
+	% 		\\
+	% 		(g) & (h) & (i)
+	% 	\end{tabular}
+	% \end{figure}
+
+\prob{3}{}
+
+\prob{4}{To show the global precision of Heun's method we will start with the limit of the Taylor Series expansion of our function as the function itself, $x(t_{n+1}) = x(t_n) + h f\big(x(t_n)\big) + \frac{h^2}{2}f'\big(x(t_n)\big)$} and then subtract the function estimate from Heun's method at some time step $n+1$ to first get the local precision.
+	\begin{align*}
+		e_{n+1} &= x(t_{n+1}) - x_H(t_{n+1})
+		\\
+		&=
+		\cancel{x(t_n)} + h f\big(x(t_n)\big) + \frac{h^2}{2}f'\big(x(t_n)\big)
+		-
+		\bigg(
+		\cancel{x(t_n)} + \frac{h}{2}
+			\Big[
+			f\big(t_n,x(t_n)\big) + f\big(t_{n+1},x_E(t_n)\big)
+			\Big]
+		\bigg)
+		\\
+		&\simeq
+		h f\big(x(t_n)\big) + \frac{h^2}{2}f'\big(x(t_n)\big)
+		-
+		\frac{h}{2}
+			\Big[
+			f\big(x(t_n)\big) + f\big(x(t_n)\big) + h f'\big(x(t_n)\big) + \frac{h^2}{2!}f''\big(x(t_n)\big) + ...
+			\Big]
+		\\
+		&=
+		\cancel{h f\big(x(t_n)\big)}
+		+
+		\cancel{\frac{h^2}{2}f'\big(x(t_n)\big)}
+		-
+		\Big[
+			\cancel{h f\big(x(t_n)\big)}
+			+
+			\cancel{\frac{h^2}{2} f'\big(x(t_n)\big)}
+			+
+			\frac{h^3}{4}f''\big(x(t_n)\big)
+			+ ...
+		\Big]
+		\\
+		e_{n+1}
+		&=
+		\boxed{
+		-
+		\frac{h^3}{4}f''\big(x(t_n)\big)
+		+
+		\frac{h^4}{2\times3!}f'''\big(x(t_n)\big)...
+		}
+	\end{align*}
+	Since $h \in (0,1)$, $h^3$ is the leading term for our local error and so our local precision scales with $h^3$. Our global precision thus scales as $\boxed{\frac{e_n}{h} = h^2}$.
+
+\prob{5}{}
+
+\prob{6}{}
+
+\end{document}
