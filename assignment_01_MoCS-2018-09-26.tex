@@ -61,7 +61,7 @@ Daniel Berenberg}
 %\textrm{} = sets to text form inside math land
 %SetFonts
 
-\newcommand{\prob}[2]{%
+\newcommand{\prob}[2]{
 \indent \\
 \noindent{\color{green!50!blue}\bf {\large#1.}}
 
@@ -71,38 +71,44 @@ Daniel Berenberg}
 \newcommand{\Prob}{\textrm{{\bf Pr}}}
 
 \begin{document}
-\prob{1 }{See code. File * line *.}
+\prob{1}{See code. Filename: * line number: *.}
 
 \prob{2}{}
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\label{9_Lotka-Volterra_plots}
-	% 	\begin{tabular}{lll}
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		\\
-	% 		(a) & (b) & (c)
-	% 		\\
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		\\
-	% 		(d) & (e) & (f)
-	% 		\\
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		&
-	% 		\includegraphics[width=0.33\textwidth]{}
-	% 		\\
-	% 		(g) & (h) & (i)
-	% 	\end{tabular}
-	% \end{figure}
+	\begin{figure}[h!]
+		\centering
+		\label{9_Lotka-Volterra_plots}
+		\begin{tabular}{lll}
+			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_1.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_5.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_10.pdf}\vspace{-3mm}
+			\\
+			{\scriptsize \hspace{4mm}(a) $\alpha = 0.75, h=0.1$} &
+			{\scriptsize \hspace{4mm}(b) $\alpha = 0.75, h=0.5$}&
+			{\scriptsize \hspace{4mm}(c) $\alpha = 0.75, h=1.0$}
+			\\
+			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_1.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_5.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_10.pdf}\vspace{-3mm}
+			\\
+			{\scriptsize \hspace{4mm}(d) $\alpha = 1.20, h=0.1$}&
+			{\scriptsize \hspace{4mm}(e) $\alpha = 1.20, h=0.5$}&
+			{\scriptsize \hspace{4mm}(f) $\alpha = 1.20, h=1.0$}
+			\\
+			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_1.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_5.pdf}
+			&
+			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_10.pdf}\vspace{-3mm}
+			\\
+			{\scriptsize \hspace{4mm}(g) $\alpha = 1.50, h=0.1$}&
+			{\scriptsize \hspace{4mm}(h) $\alpha = 1.50, h=0.5$}&
+			{\scriptsize \hspace{4mm}(i) $\alpha = 1.50, h=1.0$}
+		\end{tabular}
+	\end{figure}
 
 \prob{3}{}
 
