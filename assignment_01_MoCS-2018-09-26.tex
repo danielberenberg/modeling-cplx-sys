@@ -168,8 +168,11 @@ Daniel Berenberg}
 	\end{align*}
 	Since $h \in (0,1)$, $h^3$ is the leading term for our local error and so our local precision scales with $h^3$. Our global precision thus scales as $\boxed{\frac{e_n}{h} = h^2}$.
 
-\prob{5}{}
-
-\prob{6}{}
-
+\prob{5}{
+The SIS system is not periodic because the full behavior of the system can be modeled using one equation. In addition, the SIS system lives inside a two-dimensional state space. In order for a system to cycle, it needs to visit a state that is approximately the same as one it has previously visited. This would require the trace of the equation to cross itself at some point, violating the definition of a differentiable function. The SIR and SIRS models however are systems embedded in three dimensions. For each system in $N\geq3$ dimensions, approximately similar states of the system sit on a hyperplane near previously visited states. Since the SIR and SIRS epidemic models are able to be periodic, we can expect that for some set of parameters we would obtain a chaotic system.}
+\prob{6}{For the $n$-species Lotka-Volterra model, there are $2^{n}+1$ fixed points. The equation for the deriviative of each species $x_{i}$ is given by
+\begin{align*}
+    \frac{\mathrm{d}x_{i}}{\mathrm{d}t} &= x_{i}\sum_{j=1}^{n}A_{ij}(1-x_{j})
+\end{align*}
+Since for each partial derivative $\mathrm{d}x_{i}$ of the system, we fix as constants all other $x_{j}$, the derivative for each $x_{i}$ is a sum of linear functions of the form $cx_{i}$ where each $c=(1-x_{j})A_{ij}$ for $i\neq j$, for which there is a single root of $x_{i}=0$. For the remaining term in the sum of the form $(-x_{i}^{2}+x_{i})A_{ii}$, there are two roots given by the quadratic formula, one of which being $x_{i}=0$. Thus for each partial derivative there are 2 unique solutions to the equation for its derivative. Since the system consists of $n$ species, there are $2^{n}$ fixed points. The final fixed point is given by the state in which all $x_{i}$ are equal to 1, meaning their biomasses have all reached maximum capacity. This is shown for $\alpha=0.75$ in the 3-species model.}
 \end{document}
