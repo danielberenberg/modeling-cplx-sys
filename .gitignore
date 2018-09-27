@@ -5,3 +5,4 @@
 *.gz
 *.out
 *.log
+__pycache__
