@@ -4,9 +4,6 @@
 #include <functional>
 #include <vector>
 
-//typedef std::function<double (double,double)> Derivative;
-//typedef std::function<double (double, double, double, Derivative)> Solver;
-
 struct param {
     double t;
     double y;
