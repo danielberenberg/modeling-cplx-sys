@@ -79,7 +79,7 @@ def approximate(initial_positions,h,T=200):
     return Xe, Xh
 
 if __name__ == "__main__":
-    global A, T, n
+    global A, n
     T = 200 # max timestep 
     n = 3   # number of species 
 
@@ -91,17 +91,19 @@ if __name__ == "__main__":
                   [-0.5,-0.1,0.1],
                   [alphas[0],0.1,0.1]])
     
-    initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i
+    initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i 
+    
+    # solve the 3-species system for each h for each alpha
     for h in stepsizes:
         t = np.arange(0,T,h) 
         for alpha in alphas:
+            print("\rSolving 3-species LK system [a={:.02f},h={:.02f}]".format(alpha,h),end="",flush=True)
             A[2][0] = alpha
             X_ = solve_ivp(deriv_ivp, (0, T), initial_positions,t_eval=t, method="RK45")
             x1,x2,x3 = X_.y[0], X_.y[1], X_.y[2]
             Xe, Xh = approximate(initial_positions,h, T=len(t))
             x1e, x2e, x3e = zip(*Xe)
             x1h, x2h, x3h = zip(*Xh)
-            print(h, alpha, len(x1h),len(t))
             
             fig, axarr = plt.subplots(3,1)
             for i, ax in enumerate(axarr):
