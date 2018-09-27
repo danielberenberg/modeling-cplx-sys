@@ -104,48 +104,30 @@ if __name__ == "__main__":
             print(h, alpha, len(x1h),len(t))
             
             fig, axarr = plt.subplots(3,1)
-            for i, ax in enumerate(axarr):
-                ax.set_ylabel("$x_{}$".format(i+1))
-                ax.set_xlabel("$t$")
-                plt.suptitle(r"3-Species approximation for $\alpha={},h={}$".format(alpha,h))
-
-
+            axarr[2].set_ylabel("$x_{3}$")
+                axarr[1].set_xlabel("$t$")
+            axarr[0].set_ylabel("$x_{1}$")
             if (alpha, h) != (1.5,1):
                 axarr[0].plot(t,x1e,label="Euler")
                 axarr[0].plot(t,x1h,label="Heun")
                 axarr[0].plot(X_.t,x1,label="Builtin RK45",color="k")
                 axarr[0].legend()
+                axarr[0].set_xlabel("$t$")
 
                 axarr[1].plot(t,x2e)
                 axarr[1].plot(t,x2h)
                 axarr[1].plot(X_.t,x2,color="k")
+                axarr[1].set_ylabel("$x_{2}$")
 
                 axarr[2].plot(t,x3e)
                 axarr[2].plot(t,x3h)
+                axarr[2].set_xlabel("$t$")
                 axarr[2].plot(X_.t,x3,color="k")
+                axarr[0].set_title(r"3-Species approximation for $\alpha={},h={}$".format(alpha,h))
 
             else:
+                axarr[0].plot(t,x1)
+                axarr[1].plot(t,x2)
+                axarr[2].plot(t,x3)
 
-                # filter out ridiculusly large or small values to make the figure
-                # more visually appealing
-                x1e_p = np.array(list(filter(lambda x: x == x and x > 1e-3 and x < 1e+2, x1e)))
-                t1e = t[:len(x1e_p)]
-
-                x2e_p = np.array(list(filter(lambda x: x == x and x > 1e-3 and x < 10, x2e)))
-                t2e = t[:len(x2e_p)]
-
-                x3e_p = np.array(list(filter(lambda x: x == x and x > 1e-3 and x < 10, x3e)))
-                t3e = t[:len(x3e_p)]
-
-                axarr[0].plot(t1e,x1e_p, label="Euler")
-                axarr[0].plot(t,x1h, label="Heun")
-                axarr[0].plot(X_.t,x1, label="Builtin RK45",color="k")
-                axarr[1].plot(t2e,x2e_p)
-                axarr[1].plot(t,x2h)
-                axarr[1].plot(X_.t,x2,color="k")
-                axarr[2].plot(t3e,x3e_p)
-                axarr[2].plot(t,x3h)
-                axarr[2].plot(X_.t,x3,color="k")
-            
-            axarr[0].legend()
             plt.savefig("figs/3SpeciesApprox{}_{}.pdf".format(alpha,h))
