@@ -29,7 +29,7 @@ if __name__ == "__main__":
     n = 3
     T = 50
     alphas = [0.75, 1.2, 1.5] # alphas to iterate over
-    stepsizes = np.logspace(-2, 0, 40)# stepsizes to consider
+    stepsizes = np.logspace(-2, 0, 50)# stepsizes to consider
 
     # define the interaction matrix
     A = np.array([[0.5, 0.5, 0.1],
