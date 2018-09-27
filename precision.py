@@ -21,11 +21,11 @@ def max_err(soln, appx):
 def linear_fit(X,y):
     slope, inter, _, _, _ = linregress(X,y)
     Xs = np.linspace(min(X),max(X),100)
-    
+
     return Xs, Xs*slope + inter, slope, inter
 
 if __name__ == "__main__":
-    global A, n 
+    global A, n
     n = 3
     T = 50
     alphas = [0.75, 1.2, 1.5] # alphas to iterate over
@@ -35,9 +35,9 @@ if __name__ == "__main__":
     A = np.array([[0.5, 0.5, 0.1],
                   [-0.5,-0.1,0.1],
                   [alphas[0],0.1,0.1]])
-    
-    initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i 
-    fig, axarr = plt.subplots(3,1,sharex=True)
+
+    initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i
+    fig, axarr = plt.subplots(3,1,sharex=True,figsize=(7,7))
     for i, alpha in enumerate(alphas):
         A[2][0] = alpha
         max_err_e, max_err_h = [], []
@@ -53,10 +53,10 @@ if __name__ == "__main__":
 
             max_err_e.append(max_err(x1, x1e))
             max_err_h.append(max_err(x1, x1h))
-        
-        Xs_e, ye, slopee, intere = linear_fit(np.log10(stepsizes), np.log10(max_err_e)) 
-        Xs_h, yh, slopeh, interh = linear_fit(np.log10(stepsizes), np.log10(max_err_h)) 
-        
+
+        Xs_e, ye, slopee, intere = linear_fit(np.log10(stepsizes), np.log10(max_err_e))
+        Xs_h, yh, slopeh, interh = linear_fit(np.log10(stepsizes), np.log10(max_err_h))
+
         axarr[i].plot(Xs_e, ye)
         axarr[i].plot(Xs_h, yh)
         #axarr[i].set_xticklabels([r"$10^{%d}$" % np.log(_) for _ in stepsizes])
@@ -70,4 +70,4 @@ if __name__ == "__main__":
     axarr[1].legend()
     axarr[2].legend(loc="upper left")
     axarr[2].set_xlabel("$\log_{10}(h)$")
-    plt.savefig("figs/err_fn.pdf")
+    plt.savefig("figs/err_fn.pdf",bbox_inches='tight')

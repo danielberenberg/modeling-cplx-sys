@@ -64,25 +64,24 @@ Daniel Berenberg}
 \newcommand{\prob}[2]{
 \indent \\
 \noindent{\color{green!50!blue}\bf {\large#1.}}
-
-\vspace{1mm}
-\indent {\normalfont #2}
+{\normalfont #2}
 }
 \newcommand{\Prob}{\textrm{{\bf Pr}}}
 
 \begin{document}
-\prob{1}{See code. Filename: * line number: *.}
+\prob{1}{See code. Filename: \texttt{numerical.py} \\
+	\indent - line number: 38 for Euler's method \\
+	\indent -  line number: 56 for Heun's method}
 
-\prob{2}{}
-	\begin{figure}[h!]
+\prob{2}{Figure \ref{9_Lotka-Volterra_plots} shows the 3-species approximation for each of our parameter combinations of $\alpha$ and $h$. We observe that as our timestep spacing parameter $h$ increases, the Euler approximation gets worse. It only appears to be a sufficient method for estimating for the most stable case and highest resolution, $\alpha=0.75,h=0.1$. Particularly for the more chaotic parameter of $\alpha=1.5$ and the lowest resolution step size of $h = 1.0$, the Euler method completely diverges for all $x_i$ species, and even Heun's method is also a poor appriximation of the system behavior. }
+	\hspace{-2mm}\begin{figure}[h!]
 		\centering
-		\label{9_Lotka-Volterra_plots}
 		\begin{tabular}{lll}
 			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_1.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_5.pdf}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_5.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_10.pdf}\vspace{-3mm}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox75_10.pdf}\vspace{-3mm}
 			\\
 			{\scriptsize \hspace{4mm}(a) $\alpha = 0.75, h=0.1$} &
 			{\scriptsize \hspace{4mm}(b) $\alpha = 0.75, h=0.5$}&
@@ -90,9 +89,9 @@ Daniel Berenberg}
 			\\
 			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_1.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_5.pdf}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_5.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_10.pdf}\vspace{-3mm}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox120_10.pdf}\vspace{-3mm}
 			\\
 			{\scriptsize \hspace{4mm}(d) $\alpha = 1.20, h=0.1$}&
 			{\scriptsize \hspace{4mm}(e) $\alpha = 1.20, h=0.5$}&
@@ -100,17 +99,27 @@ Daniel Berenberg}
 			\\
 			\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_1.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_5.pdf}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_5.pdf}
 			&
-			\hspace{-4mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_10.pdf}\vspace{-3mm}
+			\hspace{-5mm}\includegraphics[width=0.35\textwidth]{figs/3SpeciesApprox150_10.pdf}\vspace{-3mm}
 			\\
 			{\scriptsize \hspace{4mm}(g) $\alpha = 1.50, h=0.1$}&
 			{\scriptsize \hspace{4mm}(h) $\alpha = 1.50, h=0.5$}&
 			{\scriptsize \hspace{4mm}(i) $\alpha = 1.50, h=1.0$}
 		\end{tabular}
+		\caption{3-Species Lotka-Volterra system time series for each species $x_i$, estimated using Heun's and Eulers's method, and varying parameters of $\alpha$ and timesteps $h$.}
+		\label{9_Lotka-Volterra_plots}
 	\end{figure}
 
-\prob{3}{}
+
+	\begin{wrapfigure}{r}{0.65\textwidth}
+		\centering
+		\includegraphics[width=0.7\textwidth]{figs/err_fn.pdf}\vspace{-2mm}
+		\caption{Log-log plot of the maximum absolute error in species 1 predictions}
+		\label{error_fns}
+	\end{wrapfigure}
+
+\prob{3}{To study the error of our integrators we took the difference of the builtin \texttt{solve\_ivp} and the outputs of each of our integrators, \texttt{Euler} and \texttt{Heun}, plotting the maximum absolute differences side by side in Figure \ref{error_fns}. We find, as expected, that the Euler integrator has consistently higher maximum error per timestep spacing, $h$ and also has a higher slope in log-log space. Since the slope of the fit line represents the exponent of the error, although our errors do not match to the theoretical values we believe that this is due to the fact that we are comparing the integrators to builtin function that itself has an error $\sim h^4$. }
 
 \prob{4}{To show the global precision of Heun's method we will start with the limit of the Taylor Series expansion of our function as the function itself, $x(t_{n+1}) = x(t_n) + h f\big(x(t_n)\big) + \frac{h^2}{2}f'\big(x(t_n)\big)$} and then subtract the function estimate from Heun's method at some time step $n+1$ to first get the local precision.
 	\begin{align*}
