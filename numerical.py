@@ -41,8 +41,9 @@ def Euler(X, h):
         :(np.array) - appx location of each at ti+1
     """
     dXdt = species_deriv(X)
-
-    return np.array([xi + dXdt[i]*h for i,xi in enumerate(X)])
+    
+    #return np.array(X + np.multiply(h,dXdt))
+    return np.array([xi + dXdt[i]*h for i,xi in enumerate(X)],dtype=np.float64)
 
 
 def Heun(X,h):
@@ -61,14 +62,16 @@ def Heun(X,h):
     Xp1 = Euler(X,h)
     dXp1dt = species_deriv(Xp1)
     dXdt = species_deriv(X) 
-
-    return np.array([xi + (h/2)*(dXdt[i] + dXp1dt[i]) for i,xi in enumerate(X)])
+    
+    #return np.array(X + np.multiply((h/2),np.multiply(dXdt, dXp1dt)))
+    return np.array([xi + (h/2)*(dXdt[i] + dXp1dt[i]) for i,xi in enumerate(X)],dtype=np.float64)
 
 def approximate(initial_positions,h,T=200):
     # zero out the approximations 
-    Xe = np.zeros((T,n))  
-    Xh = np.zeros((T,n)) 
-    Xe[0] = Xh[0] = initial_positions
+    Xe = np.zeros((T,n),dtype=np.float64)  
+    Xh = np.zeros((T,n),dtype=np.float64) 
+    Xe[0] = initial_positions
+    Xh[0] = initial_positions
     for i in range(1, T):
         Xe[i] = Euler(Xe[i-1], h)
         Xh[i] = Heun(Xh[i-1], h)
@@ -91,31 +94,33 @@ if __name__ == "__main__":
     initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i
     for h in stepsizes:
         t = np.arange(0,T,h) 
-        X_ = solve_ivp(deriv_ivp, (0, T), initial_positions,t_eval=t, method="RK45")
-        x1,x2,x3 = X_.y[0], X_.y[1], X_.y[2]
-
         for alpha in alphas:
             A[2][0] = alpha
-            Xe, Xh = approximate(initial_positions,h, T=len(t))
-            x1e, x2e, x3e = zip(*Xe)
-            x1h, x2h, x3h = zip(*Xh)
+            X_ = solve_ivp(deriv_ivp, (0, T), initial_positions,t_eval=t, method="RK45")
+            x1,x2,x3 = X_.y[0], X_.y[1], X_.y[2]
+            Xe_, Xh_ = approximate(initial_positions,h, T=len(t))
+            x1e, x2e, x3e = zip(*Xe_)
+            x1h, x2h, x3h = zip(*Xh_)
             print(h, alpha, len(x1h),len(t))
             
             fig, axarr = plt.subplots(3,1)
             axarr[0].plot(t,x1e,label="Euler")
             axarr[0].plot(t,x1h,label="Heun")
-            axarr[0].plot(t,x1,label="Builtin RK45",color="k")
+            axarr[0].plot(X_.t,x1,label="Builtin RK45",color="k")
             axarr[0].legend()
             axarr[0].set_xlabel("$t$")
+            axarr[0].set_ylabel("$x_{1}$")
 
             axarr[1].plot(t,x2e)
             axarr[1].plot(t,x2h)
-            axarr[1].plot(t,x2,color="k")
+            axarr[1].plot(X_.t,x2,color="k")
             axarr[1].set_xlabel("$t$")
+            axarr[1].set_ylabel("$x_{2}$")
 
             axarr[2].plot(t,x3e)
             axarr[2].plot(t,x3h)
             axarr[2].set_xlabel("$t$")
-            axarr[2].plot(t,x3,color="k")
+            axarr[2].plot(X_.t,x3,color="k")
+            axarr[2].set_ylabel("$x_{3}$")
             axarr[0].set_title(r"3-Species approximation for $\alpha={},h={}$".format(alpha,h))
             plt.savefig("figs/3SpeciesApprox{}_{}.pdf".format(alpha,h))
