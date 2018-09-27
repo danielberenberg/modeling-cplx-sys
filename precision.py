@@ -22,7 +22,7 @@ def linear_fit(X,y):
     slope, inter, _, _, _ = linregress(X,y)
     Xs = np.linspace(min(X),max(X),100)
     
-    return Xs, Xs*slope + inter
+    return Xs, Xs*slope + inter, slope, inter
 
 if __name__ == "__main__":
     global A, n 
@@ -54,18 +54,20 @@ if __name__ == "__main__":
             max_err_e.append(max_err(x1, x1e))
             max_err_h.append(max_err(x1, x1h))
         
-        Xs_e, ye = linear_fit(np.log10(stepsizes), np.log10(max_err_e)) 
-        Xs_h, yh = linear_fit(np.log10(stepsizes), np.log10(max_err_h)) 
+        Xs_e, ye, slopee, intere = linear_fit(np.log10(stepsizes), np.log10(max_err_e)) 
+        Xs_h, yh, slopeh, interh = linear_fit(np.log10(stepsizes), np.log10(max_err_h)) 
         
         axarr[i].plot(Xs_e, ye)
         axarr[i].plot(Xs_h, yh)
         #axarr[i].set_xticklabels([r"$10^{%d}$" % np.log(_) for _ in stepsizes])
         #axarr[i].set_yscale('log'); axarr[i].set_xscale('log')
 
-        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_e),label="Euler's Method")
-        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_h),label="Heun's Method")
+        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_e),label=r"$m_{Euler}=%0.3f$" % slopee)
+        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_h),label=r"$m_{Heun}=%0.3f$" % slopeh)
         axarr[i].set_ylabel(r"$\alpha={}$".format(alpha))
 
     axarr[0].legend()
+    axarr[1].legend()
+    axarr[2].legend(loc="upper left")
     axarr[2].set_xlabel("$\log_{10}(h)$")
     plt.savefig("figs/err_fn.pdf")
