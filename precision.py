@@ -16,7 +16,7 @@ def max_err(soln, appx):
                                  of the same length
     """
 
-    return max(soln - appx)
+    return max(abs(soln - appx))
 
 def linear_fit(X,y):
     slope, inter, _, _, _ = linregress(X,y)
