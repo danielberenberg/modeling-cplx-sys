@@ -5,6 +5,7 @@ from numerical import approximate, deriv_ivp
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.stats import linregress
 
 def max_err(soln, appx):
     """
@@ -16,6 +17,12 @@ def max_err(soln, appx):
     """
 
     return max(soln - appx)
+
+def linear_fit(X,y):
+    slope, inter, _, _, _ = linregress(X,y)
+    Xs = np.linspace(min(X),max(X),100)
+    
+    return Xs, Xs*slope + inter
 
 if __name__ == "__main__":
     global A, n 
@@ -30,8 +37,7 @@ if __name__ == "__main__":
                   [alphas[0],0.1,0.1]])
     
     initial_positions = [0.3, 0.2, 0.1] # xi_0 for each species i 
-    
-    fig, axarr = plt.subplots(3,1)
+    fig, axarr = plt.subplots(3,1,sharex=True)
     for i, alpha in enumerate(alphas):
         A[2][0] = alpha
         max_err_e, max_err_h = [], []
@@ -48,12 +54,18 @@ if __name__ == "__main__":
             max_err_e.append(max_err(x1, x1e))
             max_err_h.append(max_err(x1, x1h))
         
-        axarr[i].set_yscale('log'); axarr[i].set_xscale('log')
-        axarr[i].scatter(stepsizes,max_err_e,label="Euler's Method")
-        axarr[i].scatter(stepsizes,max_err_h,label="Heun's Method")
+        Xs_e, ye = linear_fit(np.log10(stepsizes), np.log10(max_err_e)) 
+        Xs_h, yh = linear_fit(np.log10(stepsizes), np.log10(max_err_h)) 
+        
+        axarr[i].plot(Xs_e, ye)
+        axarr[i].plot(Xs_h, yh)
+        #axarr[i].set_xticklabels([r"$10^{%d}$" % np.log(_) for _ in stepsizes])
+        #axarr[i].set_yscale('log'); axarr[i].set_xscale('log')
+
+        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_e),label="Euler's Method")
+        axarr[i].scatter(np.log10(stepsizes),np.log10(max_err_h),label="Heun's Method")
         axarr[i].set_ylabel(r"$\alpha={}$".format(alpha))
 
-    
     axarr[0].legend()
-    axarr[2].set_xlabel("$h$")
+    axarr[2].set_xlabel("$\log_{10}(h)$")
     plt.savefig("figs/err_fn.pdf")
