@@ -166,10 +166,11 @@ Daniel Berenberg}
 		\frac{h^4}{2\times3!}f'''\big(x(t_n)\big)...
 		}
 	\end{align*}
-	Since $h \in (0,1)$, $h^3$ is the leading term for our local error and so our local precision scales with $h^3$. Our global precision thus scales as $\boxed{\frac{e_n}{h} = h^2}$.
+	Since $h \in (0,1)$, $h^3$ is the leading term for our local error and so our local precision scales with $h^3$. Our global precision thus scales as $\boxed{\frac{e_n}{h} = h^2}$.\\
 
 \prob{5}{
 The SIS system is not periodic because the full behavior of the system can be modeled using one equation. In addition, the SIS system lives inside a two-dimensional state space. In order for a system to cycle, it needs to visit a state that is approximately the same as one it has previously visited. This would require the trace of the equation to cross itself at some point, violating the definition of a differentiable function. The SIR and SIRS models however are systems embedded in three dimensions. For each system in $N\geq3$ dimensions, approximately similar states of the system sit on a hyperplane near previously visited states. Since the SIR and SIRS epidemic models are able to be periodic, we can expect that for some set of parameters we would obtain a chaotic system.}
+
 \prob{6}{For the $n$-species Lotka-Volterra model, there are $2^{n}+1$ fixed points. The equation for the deriviative of each species $x_{i}$ is given by
 \begin{align*}
     \frac{\mathrm{d}x_{i}}{\mathrm{d}t} &= x_{i}\sum_{j=1}^{n}A_{ij}(1-x_{j})
