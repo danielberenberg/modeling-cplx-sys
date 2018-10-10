@@ -106,10 +106,10 @@ def move_walkers(mat):
 
 def plot_matrix(A, name):
     X,Y = zip(*np.array(np.where(A>0)).T.tolist())
-    plt.clf()
     plt.scatter(X,Y)
     plt.xticks([]); plt.yticks([])
     plt.savefig(name)
+    plt.clf()
 
     return name
 
