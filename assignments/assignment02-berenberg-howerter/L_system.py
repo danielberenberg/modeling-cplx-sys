@@ -5,6 +5,8 @@ import os
 import sys
 import numpy as np
 
+print('********************** WELCOME **********************')
+
 # option to use auto set-up:
 YN = input('Would you like to build your own system (or use the auto-set-up)? (Y/N) ')
 
@@ -24,13 +26,15 @@ if YN == 'Y':
         rules[k] = str(input('What would you like "{}" to map to? '.format(k)))
 else:
     axiom = 'G'
-    rules = {'G':'F[+G][-G]F[+G][-G]FG','F':'FF'}
+    rules = {'G':'F[+G][-G]G','F':'FF'}
 
 # save the rules:
 np.save('L_sysRules.npy',rules)
 
 # ask for number of iterations:
-reps = int(input('How many iterations of the L-system would you like to perform? '))
+reps = int(input('How many iterations of the L-system would you like to perform? (recommend only up to 10) '))
+if reps == '':
+    reps = 5
 
 # call L-system build script:
 print('Building L-system...')
