@@ -5,9 +5,9 @@ import numpy as np
 import sys
 import re
 
-axiom = sys.argv[1]
-reps = sys.argv[2]
-rules = np.load('L_sysRules.npy'),item()
+axiom = str(sys.argv[1])
+reps = int(sys.argv[2])
+rules = np.load('L_sysRules.npy').item()
 
 def L_system(axiom,rules,reps):
     '''
