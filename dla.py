@@ -12,6 +12,8 @@ import imageio
 import os
 import sys
 
+factor = 2
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Diffusion Limited Aggregation")
     parser.add_argument("-d","-dims",
@@ -35,8 +37,8 @@ def parse_args():
     parser.add_argument("-o","--gif-name",
                         dest="outfile",
                         type=str,
-                        default="DLA.gif",
-                        help="name of the final gif")
+                        default=None,
+                        help="name of the final gif; default is None (no .gif)")
 
     parser.add_argument("-f","--frame-dir",
                         dest="frame_directory",
@@ -84,17 +86,6 @@ def move_walkers(mat):
     args:
         :mat - matrix containing walkers
     """
-    dimx, dimy = mat.shape
-    origin = [[dimx/2, dimy/2],
-              [dimx/2 + 1, dimy/2],
-              [dimx/2 - 1, dimy/2],
-              [dimx/2, dimy/2 + 1],
-              [dimx/2, dimy/2 - 1],
-              [dimx/2+1,dimy/2+1],
-              [dimx/2-1,dimy/2+1],
-              [dimx/2-1,dimy/2-1],
-              [dimx/2+1,dimy/2-1]]
-    factor = 2
     # label clusters with skimage magic
     walkers_lbld = measure.label(mat, connectivity=factor)
     # extract indexes by returning all indices that had a one
@@ -128,7 +119,7 @@ def move_walkers(mat):
     M[next_positions] = 1
     return M, len(indices) - len(nonmovers)
 
-def plot_matrix(A, name):
+def plot_matrix(A, name, plot_num=True):
     kwargs = {"color":"black","marker":"s","facecolors":"white","edgecolors":"black","s":2}
     X1,Y1 = zip(*np.array(np.where(A == 1)).T.tolist())
     dimx, dimy = A.shape
@@ -138,8 +129,9 @@ def plot_matrix(A, name):
     plt.ylim(0,dim)
     plt.scatter(X1,Y1, **kwargs)
     plt.scatter(*origin,**kwargs)
-    num = int(name.split("__")[-1].split(".")[0])
-    plt.text(1,1,num)
+    if plot_num:
+        num = int(name.split("__")[-1].split(".")[0])
+        plt.text(1,1,num)
     plt.xticks([]); plt.yticks([])
     plt.savefig(name)
     plt.clf()
@@ -158,6 +150,20 @@ def flip(p):
 
 if __name__ == "__main__":
     args = parse_args().parse_args()
+    global origin
+    dimx = dimy = args.dimensions
+
+    # defining the neighborhood of points that
+    # we will constitute as the origin
+    origin = [[dimx/2, dimy/2],
+              [dimx/2 + 1, dimy/2],
+              [dimx/2 - 1, dimy/2],
+              [dimx/2, dimy/2 + 1],
+              [dimx/2, dimy/2 - 1],
+              [dimx/2 + 1,dimy/2 + 1],
+              [dimx/2 - 1,dimy/2 + 1],
+              [dimx/2 - 1,dimy/2 - 1],
+              [dimx/2 + 1,dimy/2 - 1]]
     L = len(str(args.generations))
 
     fmt = "\r[{:%d" % L + "d}]"
@@ -169,16 +175,32 @@ if __name__ == "__main__":
     for g in range(args.generations):
 
         if flip(args.spawn_prob):
+            print("spawning")
             nspawn = np.random.randint(1,args.n_walkers)
             spawn_walkers(M, nspawn)
 
         print(fmt.format(g),end="",flush=True)
         M, nviable = move_walkers(M)
-        filenames.append(plot_matrix(M,outfile_str.format(g+1)))
-     
-    print("\r" + 80*" " + "\rwriting {}....".format(args.outfile),end="")
-    with imageio.get_writer(args.outfile, mode="I") as W:
-        for fname in filenames:
-            img = imageio.imread(fname)
-            W.append_data(img)
-    print("DONE")
+        if args.outfile:
+            filenames.append(plot_matrix(M,outfile_str.format(g+1))) 
+   
+    # label the walkers
+    walkers_lbld = measure.label(M, connectivity=factor)
+    # where are the walkers currently residing
+    idx = [np.array(np.where(walkers_lbld == label)).T.tolist() for label in np.unique(walkers_lbld) if label]
+    # detect collisions
+    collisions = filter(lambda x: len(x) > 1 and any(o in x for o in origin), idx)
+    # generate a collision mask
+    maskX, maskY = zip(*reduce(lambda x1,x2: x1 + x2, collisions))
+    # populate a new matrix with the only the frozen structure
+    final_structure = np.zeros((args.dimensions,args.dimensions))
+    final_structure[maskX, maskY] = 1
+    # plot final structure 
+    final = plot_matrix(final_structure, os.path.join(args.frame_directory,"FinalStructure.png"), plot_num=False)
+    if args.outfile:
+        print("\r" + 80*" " + "\rwriting {}....".format(args.outfile),end="")
+        with imageio.get_writer(args.outfile, mode="I") as W:
+            for fname in filenames:
+                img = imageio.imread(fname)
+                W.append_data(img)
+        print("DONE")
