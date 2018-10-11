@@ -18,7 +18,7 @@ def parse_args():
                         dest="dimensions",
                         type=int,
                         help="dimensions of the matrix to conduct simulation",
-                        default=1000)
+                        default=100)
 
     parser.add_argument("-n",
                         dest="generations",
@@ -79,9 +79,12 @@ def move_walkers(mat):
     """
     # label clusters with skimage magic
     walkers_lbld = measure.label(mat, connectivity=1)
+    print("walkers labeled\n",walkers_lbld)
     # extract indexes by returning all indices that had a one
-    idx = [np.array(np.where(walkers_lbld == label)).T.tolist() for label in np.unique(walkers_lbld) if label]
+    idx = [tuple(i for i in np.squeeze(np.where(walkers_lbld == label)).T.tolist()) for label in np.unique(walkers_lbld) if label]
     print(idx)
+    #print([np.where(walkers_lbld == label) for label in np.unique(walkers_lbld) if label] 
+    #indices = list(reduce(lambda x1,x2: x1+x2
     M = np.zeros(mat.shape)  # new matrix
     maskX, maskY = [], [] 
     try:  # test if there are clusters > length 2, concatenate each such cluster, split into 2 sep. arrays
@@ -97,9 +100,9 @@ def move_walkers(mat):
             3:np.array([1,0])}
     
     # get movers that aren't found in clusters
-    nonmovers = list(zip(maskX, maskY))
+    nonmovers = set(zip(maskX, maskY))
+    #movers = list(filter(lambda x: x not in nonmovers, idx))
     movers = list(filter(lambda x: x not in nonmovers, idx))
-    sys.exit() 
     # select moves for each mover
     moves = np.array(list(map(lambda x: NSEW[x], np.random.randint(0,high=4,size=len(movers)))))
     # generate the next positions for the walkers to move with periodic boundaries
