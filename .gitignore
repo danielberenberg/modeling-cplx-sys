@@ -3,8 +3,8 @@
 *.aux
 *.pdf
 *.gif
-*.png
 *.gz
+*.png
 *.out
 *.log
 *.zip
