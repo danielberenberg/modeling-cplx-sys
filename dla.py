@@ -6,6 +6,8 @@ import numpy as np
 import random
 from skimage import measure
 from functools import reduce
+from operator import add
+from scipy.stats import linregress
 import argparse
 import matplotlib.pyplot as plt
 import imageio
@@ -117,18 +119,18 @@ def move_walkers(mat):
     # generate the next positions for the walkers to move with periodic boundaries
     next_positions = list(zip(*np.mod(movers + moves,mat.shape)))
     M[next_positions] = 1
-    return M, len(indices) - len(nonmovers)
+    return M 
 
 def plot_matrix(A, name, plot_num=True):
     kwargs = {"color":"black","marker":"s","facecolors":"white","edgecolors":"black","s":2}
     X1,Y1 = zip(*np.array(np.where(A == 1)).T.tolist())
     dimx, dimy = A.shape
-    origin = [dimx/2, dimy/2]
+    #origin = [dimx/2, dimy/2]
     dim = A.shape[0]
     plt.xlim(0,dim)
     plt.ylim(0,dim)
     plt.scatter(X1,Y1, **kwargs)
-    plt.scatter(*origin,**kwargs)
+    #plt.scatter(*origin,**kwargs)
     if plot_num:
         num = int(name.split("__")[-1].split(".")[0])
         plt.text(1,1,num)
@@ -147,6 +149,44 @@ def flip(p):
         (bool) - H or T
     """
     return random.random() < p
+
+def split(A, sz):
+    """
+    split a matrix into submatrices
+
+    adapted from:
+    ------------
+    https://stackoverflow.com/questions/16856788/slice-2d-array-into-smaller-2d-arrays
+
+    args:
+        :A (ndarray)
+        :sz (int) - the (square) dimensions of the subblock
+    returns:
+        :a generator of submats
+    """
+    spl = np.array_split(A, sz)
+    res = map(lambda x: np.array_split(x, sz, axis=1), spl)
+    res = reduce(add, res)
+    return res
+
+def count_boxes(M, a):
+    """
+    perform the box counting method on M, that is
+    determine the number of boxes N necessary to cover
+    all 1's in M with unit boxes of size a
+
+    args:
+        :M (nd-array)
+        :a (size of a box)
+    returns:
+        :N (int) the number of boxes it takes
+    """
+    bxs = split(M, a)
+    N = 0
+    for bx in bxs:
+        N += int(1 in bx)
+
+    return N
 
 if __name__ == "__main__":
     args = parse_args().parse_args()
@@ -175,12 +215,11 @@ if __name__ == "__main__":
     for g in range(args.generations):
 
         if flip(args.spawn_prob):
-            print("spawning")
             nspawn = np.random.randint(1,args.n_walkers)
             spawn_walkers(M, nspawn)
 
         print(fmt.format(g),end="",flush=True)
-        M, nviable = move_walkers(M)
+        M = move_walkers(M)
         if args.outfile:
             filenames.append(plot_matrix(M,outfile_str.format(g+1))) 
    
@@ -195,8 +234,34 @@ if __name__ == "__main__":
     # populate a new matrix with the only the frozen structure
     final_structure = np.zeros((args.dimensions,args.dimensions))
     final_structure[maskX, maskY] = 1
+
+    plt.clf()
+    print("\r" + 80*" " + "\rwriting {}...".format(args.frame_directory,"FinalStructure.png"),end="")
     # plot final structure 
     final = plot_matrix(final_structure, os.path.join(args.frame_directory,"FinalStructure.png"), plot_num=False)
+    print("DONE")
+    
+    # do box counting
+    print("box counting....",end="")
+    Ns = np.zeros(args.dimensions-1) 
+    avals = np.array(list(range(1, args.dimensions)))
+    for a in avals: 
+        Ns[a-1] = count_boxes(final_structure, a)
+    
+    D, _,_,_,_ = linregress(np.log(1/avals), np.log(Ns))
+    D = abs(D)
+
+    
+    plt.clf()
+    
+    plt.loglog(1/avals,Ns,marker="o")
+    plt.xlabel("Box size $a$")
+    plt.ylabel("Number of boxes to cover structure")
+    plt.text(0.01, 1, "$D={:0.2f}$".format(float(D)))
+    plt.savefig(os.path.join(args.frame_directory,"BoxCounts.png"))
+    print("DONE")
+    
+
     if args.outfile:
         print("\r" + 80*" " + "\rwriting {}....".format(args.outfile),end="")
         with imageio.get_writer(args.outfile, mode="I") as W:
