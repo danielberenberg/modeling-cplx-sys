@@ -51,10 +51,10 @@ def parse_args():
     parser.add_argument("-p",
                         dest="spawn_prob",
                         type=float,
-                        default=1e-3,
+                        default=0,
                         help="probability of new walkers spawning; if it is activated"
                             " a number between 1 and nb-walkers is sampled uniformly;"
-                            " that many walkers are spawned")
+                            " that many walkers are spawned; default is 0 (no new spawns)")
     return parser
 
 def spawn_walkers(mat, N=10):
