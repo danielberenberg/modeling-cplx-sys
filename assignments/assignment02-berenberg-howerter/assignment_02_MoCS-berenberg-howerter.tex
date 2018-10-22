@@ -117,7 +117,23 @@ Daniel Berenberg}
 	\end{figure}
 
 
-
-
-
+	\begin{itemize}
+	\item See \texttt{dla.py}. Running \texttt{python dla.py --help} will display input argument
+	information.
+	\item In order to speed up the process, we introduced various methods that adderessed both
+	efficiency and modified the traditional DLA description. In regards to (computational) efficiency, essentially
+	the entire implementation is vectorized, allowing us to track diffusion across the entire space in parallel.
+	In addition, the many of the item-wise comparison portions of the algorithm are implemented using Python generators such as \texttt{map}, \texttt{filter}, and \texttt{reduce}.
+	These keywords allow us to stack complex computational routines that process the input matrix without iterating through the matrix more than once. Finally, we elected to use \texttt{skimage} to identify collision clusters in the matrix; we consider this to be an efficiency gain because their implementation is undoubted faster and potentially precompiled. We chose to modify the traditional DLA model by using 2-connectivity, meaning two particles are adjacent if they are connected in any direction (N,S,E,W,NE,NW,SE,SW). Finally, with probability $p=0.01$, some number of walkers are spawned in random locations on the matrix, populating a (potentially) sparse population of moving particles.
+	\item The Dimension implies that the structure is fractal. It sits between a 1- and 2-D structure.
+	\end{itemize}
+	\vspace{-5mm}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=0.7\textwidth]{figs/FinalStructure}
+	\end{figure}\vspace{-15mm}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=0.7\textwidth]{figs/BoxCounts}
+	\end{figure}
 \end{document}
