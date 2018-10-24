@@ -21,10 +21,10 @@ place = "figs/traffic_gif/"
 
 os.system("rm {}".format(os.path.join(place,"*")))
 plt.close()
-bike2car  = 0.0  # proportion of vehicles that enter the system that are bikes
+bike2car  = 0.2  # proportion of vehicles that enter the system that are bikes
 b_rate = 3       # timestep (speed differential) of bikes (bikes move once every b_rate t)
 dim = 100        # dimensions of the system/grid
-time = 1000      # total time system runs for
+time = 700      # total time system runs for
 system = np.zeros((dim,dim))
 
 # flow_rates: (dict) - probability of vehicles entering the system
