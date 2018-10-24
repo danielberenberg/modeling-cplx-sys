@@ -63,7 +63,7 @@ def plot_grid(G,ts,fs,es,t):
 
 def plot_final_stats(ts,fs,es):
     plt.close()
-    fig = plt.figure(figsize=(5,15))
+    fig = plt.figure(figsize=(15,5))
 
     carstats = [f[0] for f in fs]
     bikstats = [f[1] for f in fs]
@@ -86,7 +86,7 @@ def plot_final_stats(ts,fs,es):
     plt.xlabel('timestep, t',fontsize = 10)
     plt.ylabel('propotion of vehicles that moved at timestep, t',fontsize = 10)
     plt.legend(loc=3,fontsize = 7)
-    plt.savefig("../figs/final_stats.pdf",bbox_inches='tight')
+    plt.savefig("figs/final_stats.pdf",bbox_inches='tight')
 
 
 def place_intersections(G):

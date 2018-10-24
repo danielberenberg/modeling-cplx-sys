@@ -21,10 +21,10 @@ place = "figs/traffic_gif/"
 
 os.system("rm {}".format(os.path.join(place,"*")))
 plt.close()
-bike2car  = 0.2  # proportion of vehicles that enter the system that are bikes
+bike2car  = 0.0  # proportion of vehicles that enter the system that are bikes
 b_rate = 3       # timestep (speed differential) of bikes (bikes move once every b_rate t)
 dim = 100        # dimensions of the system/grid
-time = 500      # total time system runs for
+time = 1000      # total time system runs for
 system = np.zeros((dim,dim))
 
 # flow_rates: (dict) - probability of vehicles entering the system
@@ -155,9 +155,9 @@ if allflowseq:
     path = '_t-{}_br-{}_b2c-{}_flows-{}_avgcf-{}-{}_avgbf-{}'.format(time,b_rate,round(bike2car,2),round(flows['N'],2),round(avg_cfs,3),round(avg_2half_cfs,3),round(avg_bfs,3))
 else:
     path = '_t-{}_br-{}_b2c-{}_flowN-{}-S-{}-E-{}-W-{}_avgcf-{}-{}_avgbf-{}'.format(time,b_rate,round(bike2car,2),round(flows['N'],2),round(flows['S'],2),round(flows['E'],2),round(flows['W'],2),round(avg_cfs,3),round(avg_2half_cfs,3),round(avg_bfs,3))
-with imageio.get_writer('../figs/traffic_gif'+path+'.gif', mode='I') as writer:
+with imageio.get_writer('figs/traffic_gif'+path+'.gif', mode='I') as writer:
     for filename in imgfiles:
         image = imageio.imread(filename)
         writer.append_data(image)
 
-os.system('scp ../figs/final_stats.pdf ../figs/final_stats'+path+'.pdf')
+os.system('scp figs/final_stats.pdf figs/final_stats'+path+'.pdf')
