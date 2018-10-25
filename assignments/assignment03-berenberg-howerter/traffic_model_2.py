@@ -23,7 +23,7 @@ from traffic_model_2_functions import *
 #                                          the system is a bicycle
 #                             : dim = dimensions of the system grid
 
-def traffic_model(bike2car,time,b_rate,flows,dim):
+def traffic_model(bike2car,time,b_rate,flows,N_traffic,W_traffic,dim):
     system = np.zeros((dim,dim))
     type2name = {"I":-1, "E":0, "R":1, "C":2}
     for i in range(b_rate):
@@ -35,10 +35,6 @@ def traffic_model(bike2car,time,b_rate,flows,dim):
     os.system("rm {}".format(os.path.join(place,"*")))
     plt.close()
 
-
-    # incoming traffic zones:|
-    N_traffic = [dim//20, dim//8, dim//4, dim//3, dim//3+dim//10, dim//2,  dim - dim//4]
-    W_traffic = [dim//10, dim//4, dim//3, 2*dim//3 - dim//4, dim//2, dim//2 + dim//6, dim//6, dim - dim//4, dim - dim//8]
 
     # laying roads
     traffic_in    = lay_roads(N_traffic,W_traffic,system)

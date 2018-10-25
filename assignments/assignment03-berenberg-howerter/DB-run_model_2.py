@@ -31,4 +31,8 @@ else:
 
 dim = 100        # dimensions of the system/grid
 
-traffic_model(bike2car,time,b_rate,flows,dim)
+# incoming traffic zones:|
+N_traffic = [dim//20, dim//8, dim//4, dim//3, dim//3+dim//10, dim//2,  dim - dim//4]
+W_traffic = [dim//10, dim//4, dim//3, 2*dim//3 - dim//4, dim//2, dim//2 + dim//6, dim//6, dim - dim//4, dim - dim//8]
+
+traffic_model(bike2car,time,b_rate,flows,N_traffic,W_traffic,dim)
