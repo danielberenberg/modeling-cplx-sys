@@ -16,14 +16,31 @@ from glob import glob
 from traffic_model_2_functions import *
 
 # Our main arguments to change:
+#                             : time = total time to run sys for
 #                             : b_rate = time delay for bicycles
+#                             : flow rates
 #                             : bike2car = prob. that a veh entering
 #                                          the system is a bicycle
-#                             : time = total time to run sys for
-#                             : flow rates
 
+bike2car  = 0.0  # proportion of vehicles that enter the system that are bikes
+
+time = 700
 b_rate = 3
+# flow_rates: (dict) - probability of vehicles entering the system
+#                     from N,S,E, or W directions @ time t
+allflowseq = True
+if allflowseq:
+    flowrate = 0.6
+    flows = {d:flowrate for d in set("NSEW")}
+else:
+    flows = {"N":0.2,
+             "S":0.1,
+             "E":0.05,
+             "W":0.15}
 
+
+dim = 100        # dimensions of the system/grid
+system = np.zeros((dim,dim))
 type2name = {"I":-1, "E":0, "R":1, "C":2}
 for i in range(b_rate):
     type2name['B'+str(i)] = 3+i
@@ -33,22 +50,7 @@ place = "figs/traffic_gif/"
 
 os.system("rm {}".format(os.path.join(place,"*")))
 plt.close()
-bike2car  = 0.2  # proportion of vehicles that enter the system that are bikes
-dim = 100        # dimensions of the system/grid
-time = 100      # total time system runs for
-system = np.zeros((dim,dim))
 
-# flow_rates: (dict) - probability of vehicles entering the system
-#                     from N,S,E, or W directions @ time t
-allflowseq = True
-if allflowseq:
-    flowrate = 0.4
-    flows = {d:flowrate for d in set("NSEW")}
-else:
-    flows = {"N":0.2,
-             "S":0.1,
-             "E":0.05,
-             "W":0.15}
 
 # incoming traffic zones:|
 N_traffic = [dim//4,dim//2,dim - dim//4]
@@ -178,12 +180,22 @@ imgfiles = sorted(glob(place+'*'))
 #                   avg bflow stat: average proportion of bikes moving per time step
 
 if allflowseq:
-    path = '_t-{}_br-{}_b2c-{}_flows-{}_avgcf-{}-{}_avgbf-{}'.format(time,b_rate,round(bike2car,2),round(flows['N'],2),round(avg_cfs,3),round(avg_2half_cfs,3),round(avg_bfs,3))
+    path = '_t-{}_br-{}_flows-{}_b2c-{}_avgcf-{}-{}_avgbf-{}'.format(time, b_rate, round(flows['N'],2), round(bike2car,2), round(avg_cfs,3), round(avg_2half_cfs,3), round(avg_bfs,3))
 else:
-    path = '_t-{}_br-{}_b2c-{}_flowN-{}-S-{}-E-{}-W-{}_avgcf-{}-{}_avgbf-{}'.format(time,b_rate,round(bike2car,2),round(flows['N'],2),round(flows['S'],2),round(flows['E'],2),round(flows['W'],2),round(avg_cfs,3),round(avg_2half_cfs,3),round(avg_bfs,3))
-with imageio.get_writer('figs/traffic_gif'+path+'.gif', mode='I') as writer:
+    path = '_t-{}_br-{}_flowN-{}-S-{}-E-{}-W-{}_b2c-{}_avgcf-{}-{}_avgbf-{}'.format(time, b_rate, round(flows['N'],2), round(flows['S'],2), round(flows['E'],2), round(flows['W'],2), round(bike2car,2), round(avg_cfs,3), round(avg_2half_cfs,3), round(avg_bfs,3))
+with imageio.get_writer('figs/gifs/traffic_gif'+path+'.gif', mode='I') as writer:
     for filename in imgfiles:
         image = imageio.imread(filename)
         writer.append_data(image)
 
 os.system('scp figs/final_stats.pdf figs/final_stats'+path+'.pdf')
+
+# Save stats:
+allstats = {'carflows':[fs[0] for fs in flowstats],
+            'totbikeflows':[fs[1] for fs in flowstats],
+            'bikeflows':[fs[2] for fs in flowstats],
+            'exitflows':exitflows,
+            'timesteps':timesteps}
+pklfilename = 'pickles/final_stats_'+path+'.pkl'
+with open(pklfilename, 'wb') as handle:
+    pickle.dump(allstats, handle, protocol=pickle.HIGHEST_PROTOCOL)

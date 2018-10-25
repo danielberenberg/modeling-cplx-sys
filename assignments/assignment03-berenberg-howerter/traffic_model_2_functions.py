@@ -16,6 +16,18 @@ from glob import glob
 coin_flip = lambda p: random.random() < p
 place = "figs/traffic_gif/"
 
+# colors:
+I_color = 'rosybrown'
+R_color = 'lightgray'
+E_color = 'honeydew'
+C_color = 'slateblue'
+C_colord = 'darkslateblue'
+C_color2 = 'navy'
+B_color = 'orange'
+B_colord = 'darkorange'
+B_color2 = 'gold'
+a = 0.8 #alpha val
+
 def plot_grid(G,ts,fs,es,t):
     plt.close()
     fig = plt.figure(figsize=(10,15))
@@ -24,7 +36,7 @@ def plot_grid(G,ts,fs,es,t):
     plt.subplot2grid((3,2), (0,0), colspan=2, rowspan=2)
     plt.axis('off')
     bounds = [-1,0,1,2,3,4]
-    cmap = colors.ListedColormap(['tomato','honeydew','lightgrey','slateblue','gold'])
+    cmap = colors.ListedColormap([I_color, E_color, R_color, C_color, B_color])
     norm = colors.BoundaryNorm(bounds,5)
     plt.imshow(G, interpolation='nearest', cmap=cmap, norm=norm)
 
@@ -39,21 +51,23 @@ def plot_grid(G,ts,fs,es,t):
     avg_tbfs = np.mean([bs for bs in totbikstats if bs >= 0])
     avg_exs = np.mean([e for e in es if e >= 0])
 
-    plt.plot([ts[0],ts[-1]],[avg_cfs,avg_cfs],color = 'royalblue',alpha=0.6,label='avg. prop. for cars')
-    plt.plot([ts[0],ts[-1]],[avg_2half_cfs,avg_2half_cfs],color = 'darkslateblue',alpha=0.6,label='avg. prop. for cars over last third of t interval')
-    plt.scatter(ts[:-1], carstats[:-1], s=50,alpha=0.8, facecolors='none', edgecolors='slateblue',label='prop. of cars moving in system at timestep t')
-    plt.scatter(ts[-1], carstats[-1], s=50, facecolors='none', edgecolors='navy')
-    plt.plot([ts[0],ts[-1]],[avg_bfs,avg_bfs],color = 'gold',alpha=0.6,label='avg. prop. for bikes that can move')
-    plt.plot([ts[0],ts[-1]],[avg_tbfs,avg_tbfs],color = 'peru',alpha=0.6,label='avg. prop. for all bikes')
-    plt.scatter(ts, totbikstats, s=50,alpha=0.4, facecolors='none', edgecolors='peru',label='prop. of bikes moving, out of all bikes, at timestep t')
-    plt.scatter(ts[:-1], bikstats[:-1], s=50,alpha=0.8, facecolors='none', edgecolors='gold',label='prop. of bikes moving, that can, at timestep t')
-    plt.scatter(ts[-1], bikstats[-1], s=50, facecolors='none', edgecolors='darkgoldenrod')
+    plt.plot([ts[0],ts[-1]],[avg_cfs,avg_cfs],color = C_color, alpha=a-.1,label='avg. prop. for cars')
+    plt.plot([ts[0],ts[-1]],[avg_2half_cfs,avg_2half_cfs],color = C_color2, alpha=a-.1,label='avg. prop. for cars over last third of t interval')
+    plt.scatter(ts[:-1], carstats[:-1], s=50,alpha=a, facecolors='none', edgecolors= C_color)#,label='prop. of cars moving in system at timestep t')
+    plt.scatter(ts[-1], carstats[-1], s=50, facecolors='none', edgecolors= C_colord)
+
+    plt.plot([ts[0],ts[-1]],[avg_bfs,avg_bfs],color = B_color, alpha=a-.1,label='avg. prop. for bikes that can move')
+    plt.plot([ts[0],ts[-1]],[avg_tbfs,avg_tbfs],color = B_color2, alpha=a-.1,label='avg. prop. for all bikes')
+    plt.scatter(ts[:-1], bikstats[:-1], s=50,alpha=a, facecolors='none', edgecolors= B_color)#, label='prop. of bikes moving, that can, at timestep t')
+    plt.scatter(ts[-1], bikstats[-1], s=50, facecolors='none', edgecolors= B_colord)
+    plt.scatter(ts, totbikstats, s=50,alpha=a, facecolors='none', edgecolors= B_color2) #,label='prop. of bikes moving, out of all bikes, at timestep t')
+
+    plt.plot([ts[0],ts[-1]],[avg_exs,avg_exs],color = 'crimson',alpha=a-.1,label='avg. out/in ratio for veh in system')
     #plt.scatter(ts, es, s=50,alpha=0.4, facecolors='none', edgecolors='crimson',label='out/in ratio for veh in system')
-    plt.plot([ts[0],ts[-1]],[avg_exs,avg_exs],color = 'crimson',alpha=0.3,label='avg. out/in ratio for veh in system')
 
     plt.ylim(-0.1,1.1)
     plt.xlabel('timestep, t',fontsize = 10)
-    plt.ylabel('propotion of vehicles that moved at timestep, t',fontsize = 10)
+    plt.ylabel('proportion of vehicles that moved at timestep, t',fontsize = 10)
     plt.legend(loc=3,fontsize = 8)
     #fig.tight_layout()
     #plt.colorbar(img, cmap=cmap, norm=norm, boundaries=bounds, ticks=bounds)
@@ -68,25 +82,32 @@ def plot_final_stats(ts,fs,es):
     fig = plt.figure(figsize=(15,5))
 
     carstats = [f[0] for f in fs]
-    bikstats = [f[1] for f in fs]
+    totbikstats = [f[1] for f in fs]
+    bikstats = [f[2] for f in fs]
+
     avg_cfs = np.mean([cs for cs in carstats if cs >= 0])
     avg_2half_cfs = np.mean([cs for cs in carstats[len(carstats)//3:] if cs >= 0])
     avg_bfs = np.mean([bs for bs in bikstats if bs >= 0])
+    avg_tbfs = np.mean([bs for bs in totbikstats if bs >= 0])
     avg_exs = np.mean([e for e in es if e >= 0])
 
-    plt.plot([ts[0],ts[-1]],[avg_cfs,avg_cfs],color = 'royalblue',alpha=0.6,label='avg. prop. for cars')
-    plt.plot([ts[0],ts[-1]],[avg_2half_cfs,avg_2half_cfs],color = 'darkslateblue',alpha=0.6,label='avg. prop. for cars over last third of t interval')
-    plt.scatter(ts[:-1], carstats[:-1], s=50,alpha=0.8, facecolors='none', edgecolors='slateblue',label='prop. of cars moving in system at timestep t')
-    plt.scatter(ts[-1], carstats[-1], s=50, facecolors='none', edgecolors='navy')
-    plt.plot([ts[0],ts[-1]],[avg_bfs,avg_bfs],color = 'khaki',alpha=0.6,label='avg. prop. for bikes')
-    plt.scatter(ts[:-1], bikstats[:-1], s=50,alpha=0.8, facecolors='none', edgecolors='gold',label='prop. of bikes moving in system at timestep t')
-    plt.scatter(ts[-1], bikstats[-1], s=50, facecolors='none', edgecolors='darkgoldenrod')
+    plt.plot([ts[0],ts[-1]],[avg_cfs,avg_cfs],color = C_color, alpha=a-.1,label='avg. prop. for cars')
+    plt.plot([ts[0],ts[-1]],[avg_2half_cfs,avg_2half_cfs],color = C_color2, alpha=a-.1,label='avg. prop. for cars over last third of t interval')
+    plt.scatter(ts[:-1], carstats[:-1], s=50,alpha=a, facecolors='none', edgecolors= C_color)#,label='prop. of cars moving in system at timestep t')
+    plt.scatter(ts[-1], carstats[-1], s=50, facecolors='none', edgecolors= C_colord)
+
+    plt.plot([ts[0],ts[-1]],[avg_bfs,avg_bfs],color = B_color, alpha=a-.1, label='avg. prop. for bikes that can move')
+    plt.plot([ts[0],ts[-1]],[avg_tbfs,avg_tbfs],color = B_color2, alpha=a-.1, label='avg. prop. for all bikes')
+    plt.scatter(ts[:-1], bikstats[:-1], s=50,alpha=a, facecolors='none', edgecolors= B_color)#, label='prop. of bikes moving, that can, at timestep t')
+    plt.scatter(ts[-1], bikstats[-1], s=50, facecolors='none', edgecolors= B_colord)
+    plt.scatter(ts, totbikstats, s=50,alpha=a, facecolors='none', edgecolors= B_color2)#,label='prop. of bikes moving, out of all bikes, at timestep t')
+
+    plt.plot([ts[0],ts[-1]],[avg_exs,avg_exs],color = 'crimson',alpha=a-.1,label='avg. out/in ratio for veh in system')
     #plt.scatter(ts, es, s=50,alpha=0.4, facecolors='none', edgecolors='crimson',label='out/in ratio for veh in system')
-    plt.plot([ts[0],ts[-1]],[avg_exs,avg_exs],color = 'crimson',alpha=0.3,label='avg. out/in ratio for veh in system')
 
     plt.ylim(-0.1,1.1)
     plt.xlabel('timestep, t',fontsize = 10)
-    plt.ylabel('propotion of vehicles that moved at timestep, t',fontsize = 10)
+    plt.ylabel('proportion of vehicles that moved at timestep, t',fontsize = 10)
     plt.legend(loc=3,fontsize = 7)
     plt.savefig("figs/final_stats.pdf",bbox_inches='tight')
 
