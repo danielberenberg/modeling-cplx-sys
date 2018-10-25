@@ -212,35 +212,37 @@ class Passing_regime:
 
         if direction == 'Ebound':
             self.regime = np.array([[1,1,1,1],
-                                  [2,3,1,1]])
+                                    [2,3,1,1],
+                                    [0,0,0,0]])
             self.old_loc = (i+1, j)
 
             self.new_loc = (i+1, j+3)
 
         elif direction == 'Wbound':
-            self.regime = np.array([[1,1,3,2],
-                                  [1,1,1,1]])
-            self.old_loc = (i,   j+3)
+            self.regime = np.array([[0,0,0,0],
+                                    [1,1,3,2],
+                                    [1,1,1,1]])
+            self.old_loc = (i+1,   j+3)
 
-            self.new_loc = (i,   j)
+            self.new_loc = (i+1,   j)
 
         elif direction == 'Nbound':
-            self.regime = np.array([[1,1],
-                                  [1,1],
-                                  [1,3],
-                                  [1,2]])
+            self.regime = np.array([[1,1,0],
+                                    [1,1,0],
+                                    [1,3,0],
+                                    [1,2,0]])
             self.old_loc = (i+3,  j+1)
 
             self.new_loc = (i,   j+1)
 
         elif direction == 'Sbound':
-            self.regime = np.array([[2,1],
-                                  [3,1],
-                                  [1,1],
-                                  [1,1]])
-            self.old_loc = (i,   j)
+            self.regime = np.array([[0,2,1],
+                                    [0,3,1],
+                                    [0,1,1],
+                                    [0,1,1]])
+            self.old_loc = (i,   j+1)
 
-            self.new_loc = (i+3, j)
+            self.new_loc = (i+3, j+1)
 
     def __str__(self):
         return "Car can pass bike @ ({},{})".format(self.old_loc[0],self.old_loc[1])
@@ -334,33 +336,37 @@ def cars_pass_bikes(type2name,b_rate,shadow,G):
 
      R R R R  eastbound  -> move C from (i+1, j  ) to (i+1, j+3)
      C B R R
+     E E E E
 
-     R R B C  westbound  -> move C from (i  , j+3) to (i  , j  )
+     E E E E  westbound  -> move C from (i  , j+3) to (i  , j  )
+     R R B C
      R R R R
 
-     R R      northbound -> move C from (i+3, j+1) to (i  , j+1)
-     R R
-     R B
-     R C
+     R R E    northbound -> move C from (i+3, j+1) to (i  , j+1)
+     R R E
+     R B E
+     R C E
 
-     C R      southbound -> move C from (i  , j  ) to (i+3, j  )
-     B R
-     R R
-     R R
+     E C R    southbound -> move C from (i  , j  ) to (i+3, j  )
+     E B R
+     E R R
+     E R R
     '''
 
     bikepass_regimes = {'Ebound':[np.array([[1,1,1,1],
-                                           [2,3+i,1,1]]) for i in range(b_rate)],
-                        'Wbound':[np.array([[1,1,3+i,2],
+                                           [2,3+i,1,1],
+                                           [0,0,0,0]]) for i in range(b_rate)],
+                        'Wbound':[np.array([[0,0,0,0],
+                                            [1,1,3+i,2],
                                             [1,1,1,1]]) for i in range(b_rate)],
-                        'Nbound':[np.array([[1,1],
-                                            [1,1],
-                                            [1,3+i],
-                                            [1,2]]) for i in range(b_rate)],
-                        'Sbound':[np.array([[2,1],
-                                           [3+i,1],
-                                           [1,1],
-                                           [1,1]]) for i in range(b_rate)]}
+                        'Nbound':[np.array([[1,1,0],
+                                            [1,1,0],
+                                            [1,3+i,0],
+                                            [1,2,0]]) for i in range(b_rate)],
+                        'Sbound':[np.array([[0,2,1],
+                                           [0,3+i,1],
+                                           [0,1,1],
+                                           [0,1,1]]) for i in range(b_rate)]}
 
     carmoves = 0
     for direction in bikepass_regimes:

@@ -13,9 +13,14 @@ from traffic_model_2 import *
 #                                          the system is a bicycle
 #                             : dim = dimensions of the system grid
 
-bike2car  = 0.0  # proportion of vehicles that enter the system that are bikes
-
-time = 700
+bike2car  = 0.05  # proportion of vehicles that enter the system that are bikes
+                  # Copenhagen is @ ~0.46
+                  # Amsterdam ~0.57
+                  # Portland, Or ~0.063
+                  # San Fran, CA ~0.039
+                  # Davis, CA ~0.166
+                  # VT statewide ~0.006
+time = 200
 b_rate = 3
 # flow_rates: (dict) - probability of vehicles entering the system
 #                     from N,S,E, or W directions @ time t

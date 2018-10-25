@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import pickle
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib import colors
@@ -96,9 +97,9 @@ def traffic_model(bike2car,time,b_rate,flows,allflowseq,N_traffic,W_traffic,dim)
                 if shadow[next_coord] == type2name["R"]:
                     system[next_coord] = shadow[i,j]
                     system[i,j] = type2name["R"]
-                    if shadow[i,j] == 'C':
+                    if shadow[i,j] == type2name['C']:
                         carmove +=1
-                    elif shadow[i,j] =='B':
+                    elif shadow[i,j] in [type2name['B'+str(i)] for i in range(b_rate)]:
                         bikemove +=1
 
         carmove += cars_pass_bikes(type2name,b_rate,shadow,system)
@@ -186,6 +187,6 @@ def traffic_model(bike2car,time,b_rate,flows,allflowseq,N_traffic,W_traffic,dim)
                 'bikeflows':[fs[2] for fs in flowstats],
                 'exitflows':exitflows,
                 'timesteps':timesteps}
-    pklfilename = 'pickles/final_stats_'+path+'.pkl'
+    pklfilename = 'pickles/final_stats'+path+'.pkl'
     with open(pklfilename, 'wb') as handle:
         pickle.dump(allstats, handle, protocol=pickle.HIGHEST_PROTOCOL)
