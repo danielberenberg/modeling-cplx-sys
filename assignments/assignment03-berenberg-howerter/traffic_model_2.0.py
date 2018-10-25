@@ -28,15 +28,15 @@ time = 700
 b_rate = 3
 # flow_rates: (dict) - probability of vehicles entering the system
 #                     from N,S,E, or W directions @ time t
-allflowseq = True
+allflowseq = False
 if allflowseq:
-    flowrate = 0.6
+    flowrate = 0.8
     flows = {d:flowrate for d in set("NSEW")}
 else:
-    flows = {"N":0.2,
-             "S":0.1,
-             "E":0.05,
-             "W":0.15}
+    flows = {"N":0.95,
+             "S":0.7,
+             "E":0.7,
+             "W":0.95}
 
 
 dim = 100        # dimensions of the system/grid
@@ -53,8 +53,8 @@ plt.close()
 
 
 # incoming traffic zones:|
-N_traffic = [dim//4,dim//2,dim - dim//4]
-W_traffic = [dim//4,dim//2,dim - dim//4]
+N_traffic = [dim//20, dim//8, dim//4, dim//3, dim//3+dim//10, dim//2,  dim - dim//4]
+W_traffic = [dim//10, dim//4, dim//3, 2*dim//3 - dim//4, dim//2, dim//2 + dim//6, dim//6, dim - dim//4, dim - dim//8]
 
 # laying roads
 traffic_in    = lay_roads(N_traffic,W_traffic,system)
@@ -160,10 +160,20 @@ for t in range(time):
     exitflows.append(existat)
     timesteps.append(t)
 
-    avg_cfs, avg_2half_cfs , avg_bfs= plot_grid(system,timesteps,flowstats,exitflows,t)
+    plot_grid(system,timesteps,flowstats,exitflows,t)
 
     if t == time - 1:
         plot_final_stats(timesteps,flowstats,exitflows)
+
+# Get average stats at end:
+carstats = [f[0] for f in flowstats]
+totbikstats = [f[1] for f in flowstats]
+bikstats = [f[2] for f in flowstats]
+avg_cfs = np.mean([cs for cs in carstats if cs >= 0])
+avg_2half_cfs = np.mean([cs for cs in carstats[len(carstats)//3:] if cs >= 0])
+avg_bfs = np.mean([bs for bs in bikstats if bs >= 0])
+avg_tbfs = np.mean([bs for bs in totbikstats if bs >= 0])
+avg_exs = np.mean([e for e in exitflows if e >= 0])
 
 
 # Get all gif image files

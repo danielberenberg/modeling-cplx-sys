@@ -74,7 +74,6 @@ def plot_grid(G,ts,fs,es,t):
     plt.savefig(os.path.join(place,"CAgif_timestep_{:04d}".format(t)),bbox_inches='tight')
     #plt.show()
 
-    return avg_cfs, avg_2half_cfs, avg_bfs
 
 
 def plot_final_stats(ts,fs,es):
