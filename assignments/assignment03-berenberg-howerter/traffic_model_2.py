@@ -23,7 +23,7 @@ from traffic_model_2_functions import *
 #                                          the system is a bicycle
 #                             : dim = dimensions of the system grid
 
-def traffic_model(bike2car,time,b_rate,flows,N_traffic,W_traffic,dim):
+def traffic_model(bike2car,time,b_rate,flows,allflowseq,N_traffic,W_traffic,dim):
     system = np.zeros((dim,dim))
     type2name = {"I":-1, "E":0, "R":1, "C":2}
     for i in range(b_rate):
