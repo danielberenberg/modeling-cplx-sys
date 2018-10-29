@@ -1,0 +1,18 @@
+Argument Summary
+Written at: Sunday, Oct 28, 2018 [23:34:52]
++++++++++++++++++++++++++++++++++++++++++++
+Output locations:
+	Top level---->trafsim
+	PNG loc------>......./png
+	pickles loc-->......./pickles
+	figures loc-->......./figs
+
+Incoming flow probs
+	north -- 1.00
+	south -- 1.00
+	east --- 1.00
+	west --- 1.00
+
+p(bike_spawns) = 0.15
+bikes move every 8 steps
+dimensions of grid : [100, 100]
