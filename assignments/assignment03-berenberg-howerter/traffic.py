@@ -1,3 +1,7 @@
+"""
+CA code for CS302 HW3  -- Dan Berenberg & Sarah Howerter
+"""
+
 import os
 import pickle
 import random
@@ -90,7 +94,9 @@ def find_regime(submatrix, grid):
 class Intersection:
     def __init__(self, coordinates):
         """
-        An intersection is a junction point on a grid matrix.
+        An intersection is a junction point on a grid.
+        args:
+            :coordinates (x,y) -- the top left corner of the intersection regime
         """
         i, j = self.i, self.j = coordinates
 
@@ -183,6 +189,13 @@ def lay_roads(N_traffic, W_traffic, G):
             "S":[(x-1,j) for j in S_traffic],"E":[(i,y-1) for i in E_traffic]}
 
 def move_vehicle(type2name, vtype, vi, vj, shadow, G):
+    """
+    Moves vehicle (vi, vj) of type type2name[vtype] appropriately
+    args:
+        :type2name -- mapping from string semantics such as "C" to their index in this case 2
+    returns:
+        :a dictionary mapping veh_move/veh_exit --> bool for stat collection
+    """
     M, N = G.shape
     northmost = (vi == 0 and shadow[vi, vj+1] == type2name["E"])
     southmost = (vi == N - 1 and shadow[vi, vj-1] == type2name["E"])
@@ -231,6 +244,9 @@ def move_vehicle(type2name, vtype, vi, vj, shadow, G):
         pass
 
 class PassingRegime:
+    """
+    Object that represents intersections
+    """
     def __init__(self, direction, coordinates):
         i, j = self.i, self.j = coordinates
 
