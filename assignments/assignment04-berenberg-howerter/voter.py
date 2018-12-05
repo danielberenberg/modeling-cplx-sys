@@ -30,7 +30,6 @@ def read_edgelist(filename,**kwargs):
     return G
 
 def voter_model(network, T=1000):
-    network = sorted(nx.connected_component_subgraphs(network), key=len, reverse=True)[0]
     T = range(T)
     blue_share = []
     for t in T:
@@ -61,10 +60,11 @@ def initial_coloring(net, pblue=0.5):
 if __name__ == '__main__':
     args = parse_args().parse_args()
     net  = read_edgelist(args.network)
+    net = sorted(nx.connected_component_subgraphs(net), key=len, reverse=True)[0]
     
     RUNS = 10
     BLUE_PROPS = np.arange(0.05,0.99,0.05)
-    mx_time = 200
+    mx_time = 100
 
     blueprop2proptimeline = dict() # trend of consensus prop
     blueprop2consensus = dict()    # number of times reached consensus
@@ -77,16 +77,18 @@ if __name__ == '__main__':
             print(wipe + f'run={run}, blue prop={prop:0.2f}',end='',flush=True)
             net = initial_coloring(net, pblue=prop)
             timeline = voter_model(net, T=mx_time) 
-            consensus = timeline[-1] == 1.
+            consensus = (timeline[-1] == 1. or timeline[-1] == 0.)
             try:
                 blueprop2consensus[prop] += consensus 
             except KeyError:
                 blueprop2consensus[prop] = int(consensus)
             if consensus:
+                cons_type = timeline[-1] 
                 try:
-                    blueprop2consensus_t[prop] += timeline.index(1.) 
+                    blueprop2consensus_t[prop] += timeline.index(cons_type) 
                 except KeyError:
-                    blueprop2consensus_t[prop] = timeline.index(1.)
+                    blueprop2consensus_t[prop] = timeline.index(cons_type)
+
             timelines = np.array(timeline)
             total += timeline
         try:
@@ -126,6 +128,7 @@ if __name__ == '__main__':
         axarr[2].plot(blueprop2proptimeline[prop], label=prop)
     axarr[2].set_xlabel('Time')
     axarr[2].set_ylabel('Proportion blue')
+    axarr[2].legend()
     plt.tight_layout()
     plt.savefig('voter_model_plot.pdf')
 

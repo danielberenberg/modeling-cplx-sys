@@ -205,12 +205,38 @@ tabsize=3
 		\begin{align}
 			\dot{I_k}
 			&=
-			\lambda k \theta (p_k-I_k-V_k) + f\lambda k \theta(V_k)-(1+\frac{1}{f})I_k
+			\lambda k \theta (p_k-I_k-V_k) + f\lambda k \theta(V_k)-(1+f)I_k
 		\end{align}}
 
 
 \newpage
 
+	\indent \prob{c)}{\vspace{-10mm}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=15cm]{figs/changeinI_Vallnodes-modified-hetmeanfield.pdf}
+		\label{changeI_allnodes}\vspace{-4mm}
+		\caption{}
+	\end{figure}
+	}
+
+	\indent \prob{d)}{\vspace{-10mm}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=15cm]{figs/changeinI_Vkmaxnodes-modified-hetmeanfield.pdf}
+		\label{changeI_kmaxnodes}\vspace{-4mm}
+		\caption{}
+	\end{figure}}
+    \FloatBarrier
+    Adding a vaccinated state is also achieved by modeling the interactions between compartmental pairs $I_{k}V$ and $I_{k}S$. In the case of the
+    interaction between infected and susceptible nodes, the equation is very much the same.
+    \begin{align}
+        \frac{dI_kS}{dt} = \beta k (p_k s - I_k S)\theta - I_k S
+    \end{align}
+    For infected nodes to interact with vaccinated ones however, the equation must incorporate the dampening factro $f$, giving us the following equation.
+    \begin{align}
+        \frac{dI_kV}{dt} = \beta kf(p_k v - I_k V)\theta - \frac{1}{f}I_k V
+    \end{align}
 	\indent \prob{c)}{\vspace{-10mm}
 	\begin{figure}[h!]
 		\centering
@@ -227,15 +253,37 @@ tabsize=3
 		\label{changeI_kmaxnodes}\vspace{-4mm}
 		\caption{}
 	\end{figure}}
+    \FloatBarrier
+    In both cases we believe something in either the equations or our code is incorrect. While $f = 0$ should correspond to a perfect vaccine, in both
+    methods we achieve the exact opposite. Similarly, $f=1$ counterintuitively is the best case scenario. Additionally, vaccinating the high degree nodes
+    should result in a quicker and more effective campaign, which is not the case for our current solution.
 
-\FloatBarrier
 \prob{4 {\it the voter model}}{}
 
-	\indent \prob{a)}{}
+	\indent \prob{a)}{The network chosen represents an e-mail network between members of the University Rovira i Virgili,
+                      where nodes represent email recipients or senders and edges symbolize that two university affiliates
+                      exchanged an email. There are 1133 nodes and 5452 edges in the giant component of this network.
+                      The average degree is $\langle k \rangle = 9.62$ and the diameter is $8$. 
+                      Notably, the minimum, maximum, and average closeness centrality 
+                      across nodes in the graph are (0.18,0.38,0.28) while the min, max, and average betweenness is (0, 0.04, 0.002). This
+                      implies that each node in the system not only has many lines of communication open (given the high average degree, 
+                      low shortest path lengths, and small diameter) but there is also a lack of high throughput nodes; there are very little
+                      nodes in the network that act as third parties in order for two nodes to communicate.}
 
-	\indent \prob{b)}{}
+	\indent \prob{b)}{Below shows a summary of 10 voter model runs of 100 timesteps for different proportions of ``red'' and ``blue'' opinions. 
+                      The plots show  the times to achieve consensus, the probability of consensus, and the general trends in opinion ratios for each proportion.
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=15cm]{figs/voter_model_plot.pdf}
+		\label{changeI_kmaxnodes}\vspace{-4mm}
+        \caption{Opinion dynamical trends (Top), time to achieve consensus (bottom left) and probability of consensus (bottom right). For the voter model 
+        on the email network. Time to reach consensus for roportions between $0.35$ and $0.75$ are less exact given their lower probability of consensus.}
+	\end{figure}}
 
-	\indent \prob{c)}{}
+	\indent \prob{c)}{Noting that in general it takes less than half of the maximum time for the system to reach consensus, we can postulate that the previously
+                      observed high average closeness and low average betweenness opinions to easily propagate through the network. 
+                      If a node changes their opinion, ``news'' of that nodes opinion change is likely to move quickly through the network, changing others
+                      opinions along the way.}
 
 
 \end{document}
