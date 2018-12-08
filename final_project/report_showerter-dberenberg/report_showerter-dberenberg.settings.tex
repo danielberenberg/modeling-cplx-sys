@@ -8,9 +8,18 @@
 %% also helpful, highlighting the value of adding taxonomy to labels:
 %% grep -A 1 refcheck paper-template-revtex4.log | grep -A 1 fig:
 
+% make lists tight:
+\newenvironment{enum_tight}{
+\begin{enumerate}
+\setlength{\itemsep}{1pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+}{\end{enumerate}}
+%\usepackage{enumitem}
+%\setlist[enumerate]{itemsep=0mm}
+
 %% build papers out of todo lists
 \usepackage{color}
-
 \definecolor{todoblue}{RGB}{0, 91, 187}
 \newcommand{\todo}[1]{\noindent\textcolor{todoblue}{{$\Box$ #1}}}
 
@@ -127,5 +136,3 @@
 \newcommand{\kstat}{D}
 \newcommand{\clp}{\textnormal{$p$-value}}
 \newcommand{\sigamma}{1-\simonrho}
-
-
