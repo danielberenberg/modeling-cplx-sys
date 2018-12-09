@@ -50,6 +50,12 @@ def parse_args():
                         choices=["general","ranked","approval"],
                         default="ranked")
 
+    parser.add_argument("-c","--num-candidates",
+                        dest="num_candidates",
+                        type=intgt0,
+                        help="the number of candidates per election",
+                        default=10)
+
     parser.add_argument("-t","--opinion-transparency",
                         dest="mask_size",
                         help="the number of exposed opinions per candidate, a value in (0, d], "+
@@ -59,7 +65,7 @@ def parse_args():
                         default='all')
     return parser
 
-class Individual:
+class Voter:
     ID = 0
 
     def __init__(self, n_opinions=10, opinion_vector=None, voter_id=None):
@@ -72,24 +78,60 @@ class Individual:
             :voter_id (int) - the id for this voter
         """
         if opinion_vector is None:
-            self.opinions = np.random.uniform(TOTAL_DISAGREE, TOTAL_AGREE, n_opinions)
+            self._opinions = np.random.uniform(TOTAL_DISAGREE, TOTAL_AGREE, n_opinions)
         else:
-            self.opinions = opinion_vector
+            self._opinions = np.array(opinion_vector)
 
         if voter_id is None:
-            self.voter_id = Individual.ID
-            Individual.ID += 1
+            self._id = Voter.ID
+            Voter.ID += 1
         else:
-            self.voter_id = voter_id
+            self._id = voter_id
 
     @property
     def num_opinions(self):
         return len(self.opinions)
+    
+    @property
+    def opinions(self):
+        return self._opinions
+    
+    @property
+    def id(self):
+        return self._id
 
     def to_list(self):
         return [self.voter_id] + [op for op in self.opinions]
+    
+class Candidate(Voter):
+    
+    def __init__(self, voter, transparency):
+        """
+        Initialize a Candidate, one such individual that has all the qualities
+        of a Voter with the added attribute of a set of exposed opinions
+        
+        args:
+            :transparency (int) - the number of opinions exposed by the mask
+        """
+        super(Candidate, self).__init__(n_opinions=voter.num_opinions,
+                                        opinion_vector=voter.opinions,
+                                        voter_id=voter.id)
+        # generate a mask of size `transparency`
+        idxs = list(range(self.num_opinions))   # the indices to expose/not expose
+        exposed_idx = np.random.choice(idxs, transparency)  # choose the exposed ops
 
-def get_voters(output_dir, n_voters, n_opinions):
+        # generate the opinion mask
+        self._opinion_mask = [x in exposed_idx for x in idxs]
+    
+    @property
+    def exposure(self):
+        return self._opinion_mask
+
+    @property
+    def views(self):
+        return self.opinions[self._opinion_mask]
+    
+def _get_voters(output_dir, n_voters, n_opinions, population_num):
     """
     generates and caches voting individuals with some number of opinions
     - the file will be cached to:
@@ -98,13 +140,14 @@ def get_voters(output_dir, n_voters, n_opinions):
       and its contents returned as a set of individuals
 
     args:
-        :output_file (str) - path to the cache file
+        :output_dir (str)  - directory path to the cache the populatin file
         :n_voters (int)    - number of voters to create
         :n_opinions (str)  - number of opinions per voter
+        :population_num    - id of the population
     returns:
-        :(list) - the list of voters
+        :(list) - the list of voters, realized as Individual objects
     """
-    cache_file = os.path.join(output_dir, f"VotingPopulation__N_{n_voters}__D_{n_opinions}.csv")
+    cache_file = os.path.join(output_dir, f"VotingPopulation{population_num:02d}__N_{n_voters}__D_{n_opinions}.csv")
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
@@ -115,30 +158,54 @@ def get_voters(output_dir, n_voters, n_opinions):
         for voter_data in voter_rows:
             v_id        = voter_data[0]
             opinion_vec = voter_data[1:]
-            voters.append(Individual(voter_id=v_id, opinion_vector=opinion_vec))
+            voters.append(Voter(voter_id=v_id, opinion_vector=opinion_vec))
         return voters
     else:
         pop_df = pd.DataFrame(columns=["id"] + [f"opinion_{i}" for i in range(n_opinions)])
         voters = []
         for i in range(n_voters):
-            voter = Individual(n_opinions=n_opinions)
+            voter = Voter(n_opinions=n_opinions)
             voters.append(voter)
             pop_df.loc[i] = voter.to_list()
         
         pop_df.to_csv(cache_file)
         return voters
 
+def choose_candidates(population, transparency_level, n_candidates):
+    """
+    choose candidates from the voting pool
+    args:
+        :population (list of Voter) - the voting population
+        :transparency_level (int)   - the number of exposed opinions
+    returns:
+        :a list of candidates with the given transparency lvl 
+    """
+    nominated = np.random.choice(population, n_candidates)
+    return [Candidate(nom, transparency_level) for nom in nominated]
+
+def population_stream(output_dir, n_voters, n_opinions, n_populations=100):
+    """
+    generate different populations of voters (size n_voters) with some number of opinions 
+    args:
+        :output_dir (str) - path to read/write populations from/to 
+        :n_voters   (int) - number of voting individuals in the system
+        :n_opinions (int) - number of opinions per indiv.
+        :n_populations (int) - the number of populations to stream out
+    yields:
+        :a generator of these voter populations
+    """
+    for pop in range(n_populations):
+        yield _get_voters(output_dir, n_voters, n_opinions, pop)
     
 if __name__ == "__main__":
     args = parse_args().parse_args()
     try:
         args.mask_size = int(args.mask_size)
+        if args.mask_size > args.vector_size:
+            print(f"[!!] Detected opinion transparency value > number of opinions, setting them equal")
+            args.mask_size = args.vector_size
     except ValueError:
         if isinstance(args.mask_size, str) and args.mask_size == 'all':
             args.mask_size = args.vector_size
         else:
-            sys.exit("[!!]")
-    #elif args.mask_size < 1:
-    #    sys.exit("[!!] Opinion transparency should be a value > 0")
-    #if args.mask_size > args.vector_size or args.mask_size > :
-    #    sys.exit("[!!] Mask size ")
+            sys.exit(f"[!!] unrecognized args: -t/--opinion-transparency:{args.mask_size}")
