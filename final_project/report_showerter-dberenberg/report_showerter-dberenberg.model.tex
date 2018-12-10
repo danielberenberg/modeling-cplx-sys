@@ -2,17 +2,20 @@
 
 Our model is non-spatial, agent-based, and not temporally influenced.
 It takes a random population of size $N$ where each person has an opinion vector $o^{(p)} \forall p \in N$ of dimension $d$.
-Each dimension of $o^{(p)}$ represents a distinct topic on which a person can have an opinion, under the assumption that each dimension of $o^{(p)}_i$ (each topic) are independent $\text{\bf Pr}(o^{(p)}_i | o^{(p)}_j) = o^{(p)}_i $  $\forall i,j \in d$.
-The opinion vector $o^{(p)}$ is generated for every person, $p$ in the population, $N$ at random, where each $o^{(p)}_i$ is drawn from U$(-1,1)$.
+Each dimension of $o^{(p)}$ represents a distinct topic on which a person can have an opinion.
+{\bf Assumption 1} of our model is that each dimension of $o^{(p)}_i$ (each topic) are independent of one another $\text{\bf Pr}(o^{(p)}_i | o^{(p)}_j) = o^{(p)}_i $  $\forall i,j \in d$.
+This means that the sampling method for an individual is consistent across the topic space and the distribution from which opinion $o_i$ is chosen is not influenced by any other opinion already drawn.
+The opinion vector $o^{(p)}$ is generated for every person, $p$ in the population, $N$ at random, where each $o^{(p)}_i$ is drawn from the uniform distribution, U$(-1,1)$.
 
-We measure the dissimilarity of two opinion vectors by computing Eq. \ref{eq:dissimscore}.
+We measure the dissimilarity of two opinion vectors by computing the mean absolute error, shown in Eq. \ref{eq:dissimscore}.
 This dissimilarity is computed between a person and each candidate and the choice or rank of the candidates is based on that value.
 At the end of the voting scheme, this dissimilarity score is used again to quantify voter satisfaction with the final elected candidate.
 \begin{align}
-\text{dissim}(o^{(p1)},o^{(p2)}) = \sum_{i=1}^{d}|o^{(p1)}_i - o^{(p2)}_i|
+\text{dissim}(o^{(p1)},o^{(p2)}) = \frac{\sum_{i=1}^{d}\Big|o^{(p1)}_i - o^{(p2)}_i\Big|}{d}
 \label{eq:dissimscore}
 \end{align}
 Minimizing dissimilarity maximizes happiness in the system.
+
 
 \subsection{Opinion transparency and campaign strategies}
 For each population, each voting system is run $d-1$ times, starting where all people can ``see'' and base their choice off of each candidate's full opinion vector.
