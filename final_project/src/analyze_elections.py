@@ -75,3 +75,19 @@ plt.legend(loc='best')
 plt.title('End-of-Election Happiness vs. Candidate Transparency \nfor each Voting System')
 plt.savefig('figs/avghapp_transparency.pdf',bbox_inches='tight')
 plt.clf()
+
+
+# Plot full distributions of happ scores of all populations for each V sys
+# One plot for every transparency :O
+for t in transparencies:
+    plt.figure()
+    for i,V in enumerate(full_dists):
+        plt.hist(full_dists[V][t],bins = 'auto',
+                        color = cpairs[i][1], alpha = 0.5,
+                        label = V_systems2label[V])
+    plt.xlabel('Disagreeability with elected candidate')
+    plt.ylabel('Count')
+    plt.legend(loc='best')
+    plt.title('Histograms of Disagreeability for each \nVoting System for Candidate Transparency = {}'.format(t))
+    plt.savefig('figs/disagreeability-hist_T{:02}.pdf'.format(t),bbox_inches='tight')
+    plt.clf()
