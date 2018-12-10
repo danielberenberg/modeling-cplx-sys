@@ -1,0 +1,34 @@
+
+For each population $k$ random individuals are chosen as candidates and a voting system is employed across the population.
+The voting systems that will be tested are:
+\subsection{Plurality}
+Each individual casts a single vote for the candidate with whom they believe their opinion is aligned most.
+Votes are tallied and the candidate with the largest share of votes wins the election.
+\begin{algorithm}[H]
+\caption{Plurality Voting System Algorithm}\label{alg:plurality}
+\begin{algorithmic}
+\State \Choose $k$ candidates from population $P_i$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Ranked-Choice Voting}
+Each individual ranks all candidates from most to least favorite.
+Votes are tallied to compute the proportion of the population each candidate has.
+If the maximum proportion is less than majority ($\geq 50\%$), the bottom candidate is removed from the race and their votes are redistributed.
+Redistribution takes place by observing the next highest ranked candidate in each of the rank sheets submitted by those who casted votes
+to the removed candidate. This process takes place until one candidate has attained the majority share of votes.
+\begin{algorithm}[H]
+\caption{Ranked-Choice Voting System Algorithm}\label{alg:ranked}
+\begin{algorithmic}
+\State \Choose $k$ candidates from population $P_i$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Approval Voting}
+An approval threshold is determined for the dissimilarity score and all candidates that fall below it get a vote for that person
+\begin{algorithm}[H]
+\caption{Approval Voting System Algorithm}\label{alg:approval}
+\begin{algorithmic}
+\State \Choose $k$ candidates from population $P_i$
+\end{algorithmic}
+\end{algorithm}

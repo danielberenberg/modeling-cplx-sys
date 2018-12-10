@@ -1,0 +1,41 @@
+%%%%%%%%%%%% Experiments \& Methods
+
+We create 100 different populations, each of size $N$, where each opinion vector for each person is drawn at random.
+We iterate through each population and complete all of the following steps:
+\begin{enum_tight}
+\item $k$ candidates are chosen at random from the population
+\item Voting system 1: {\it General Election} is run:
+\begin{enum_tight}
+\item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$.
+\item each person votes for 1 candidate with lowest dissimilarity score.
+\item candidate with most votes wins
+\item dissimilarity score is calculated between every person and winner
+\item average dissimilarity score and distribution of scores are recorded
+\item mask $+= 1$
+\item go back to 1. and repeat until mask $= d-1$.
+\end{enum_tight}
+\item Voting system 2: {\it Ranked-Choice Voting} is run:
+\begin{enum_tight}
+\item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$
+\item each person assigns a rank to every candidate with lowest dissimilarity score getting rank 1, next lowest getting rank 2, etc.
+\begin{enum_tight}
+\item if any candidate has $> 50\%$ of rank 1 votes, they win
+\item otherwise, candidate with lowest number of rank 1 votes is dropped and every person's vote who ranked them as 1 is given to their rank 2 candidate
+\item continue dropping lowest candidate and redistributing their votes until one candidate has $> 50\%$ of votes and they win
+\end{enum_tight}
+\item dissimilarity score is calculated between every person and winner
+\item average dissimilarity score and distribution of scores are recorded
+\item mask $+= 1$
+\item go back to 1. and repeat until mask $= d-1$.
+\end{enum_tight}
+\item Voting system 3: {\it Approval voting} is run:
+\begin{enum_tight}
+\item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$
+\item each person gives a vote to every candidate with dissimilarity score under threshold $a$.
+\item candidate with most votes wins
+\item dissimilarity score is calculated between every person and winner
+\item average dissimilarity score and distribution of scores are recorded
+\item mask $+= 1$
+\item go back to 1. and repeat until mask $= d-1$.
+\end{enum_tight}
+\end{enum_tight}

@@ -1,102 +1,30 @@
 \section{Introduction}
 \label{sec:intro}
-Our main interests in this research are the translation of complex voter opinions into the voting arena and the influence of different voting systems such as ranked-choice or approval voting on voter satisfaction of election outcomes.
-\todo{write more about why this is interesting}
+    \input{report_showerter-dberenberg.intro.tex}
 
+
+\section{Voting Systems}
+\label{sec:voting_systems}
+    \input{report_showerter-dberenberg.voting_systems.tex}
 
 
 \section{Model Set-up, Assumptions, and Parameters}
-\label{sec:model_setup}
-Our model is non-spatial, agent-based, and not temporally influenced.
-It takes a random population of size $N$ where each person has an opinion vector $o^{(p)} \forall p \in N$ of dimension $d$.
-Each dimension of $o^{(p)}$ represents a distinct topic on which a person can have an opinion, under the assumption that each dimension of $o^{(p)}_i$ (each topic) are independent $\text{\bf Pr}(o^{(p)}_i | o^{(p)}_j) = o^{(p)}_i $  $\forall i,j \in d$.
-The opinion vector $o^{(p)}$ is generated for every person, $p$ in the population, $N$ at random, where each $o^{(p)}_i$ is drawn from U$(-1,1)$.
-
-\subsection{Voting systems}
-For each population $k$ random individuals are chosen as candidates and a voting system is employed across the population.
-The voting systems that will be tested are:
-\begin{enum_tight}
-\item {\bf Plurality}: each individual casts a single vote for the candidate with whom they believe their opinion is aligned most. 
-    Votes are tallied and the candidate with the largest share of votes wins the election.
-\item {\bf Ranked-Choice Voting}: each individual ranks all candidates from most to least favorite. 
-    Votes are tallied to compute the proportion of the population each candidate has. 
-    If the maximum proportion is less than majority ($\geq 50\%$), the bottom candidate is removed from the race and their votes are redistributed.
-    Redistribution takes place by observing the next highest ranked candidate in each of the rank sheets submitted by those who casted votes
-    to the removed candidate. This process takes place until one candidate has attained the majority share of votes.
-\item {\bf Approval Voting}: an approval threshold is determined for the dissimilarity score and all candidates that fall below it get a vote for that person
-\end{enum_tight}
-We measure the dissimilarity of two opinion vectors by computing Eq. \ref{eq:dissimscore}.
-This dissimilarity is computed between a person and each candidate and the choice or rank of the candidates is based on that value.
-At the end of the voting scheme, this dissimilarity score is used again to quantify voter satisfaction with the final elected candidate.
-\begin{align}
-    \text{dissim}(o^{(p1)},o^{(p2)}) = \sum_{i=1}^{d}|o^{(p1)}_i - o^{(p2)}_i|
-    \label{eq:dissimscore}
-\end{align}
-Minimizing dissimilarity maximizes happiness in the system.
-
-\subsection{Opinion transparency and campaign strategies}
-For each population, each voting system is run $d-1$ times, starting where all people can ``see'' and base their choice off of each candidate's full opinion vector.
-Each subsequent time the voting system is run, the candidates ``mask'' 1 more dimension of their vector than during the previous iteration.
-Each candidate also chooses to mask different components of their vector, symbolizing a campaign strategy, where the candidates are attempting to leverage certain topics and hide others from the general population.
-As an example for $k = 3, d = 6$, on iteration 4, 3 components will be masked:
-\begin{align*}
-o^{(c1)} = \begin{bmatrix}\Box \\ -0.99 \\ 0.71 \\ \Box \\ \Box \\ 0.10  \end{bmatrix}
-o^{(c2)} = \begin{bmatrix}-0.54 \\ 0.79 \\ \Box \\ \Box \\ -0.11\\ \Box  \end{bmatrix}
-o^{(c3)} = \begin{bmatrix}0.58 \\ \Box \\ 0.45 \\ \Box \\ 0.99 \\ \Box  \end{bmatrix}
-\end{align*}
-With these masks, the dissimilarity scores are calculated only on the visible components of each candidates opinion vector, but the final end voter satisfaction is calculated based on the full opinion vector dissimilarity.
-Continuing from the above example, if person $p1$ has opinion vector, $$o^{(p1)}=\begin{bmatrix}0.05\\0.50\\-0.99\\-0.33\\0.89\\0.01\end{bmatrix}$$ their vote for the general election would be cast for candidate 2, since their dissimilarity score is the lowest based off of the visible components.
+\label{sec:model}
+    \input{report_showerter-dberenberg.model.tex}
 
 
-We create 100 different populations, each of size $N$, where each opinion vector for each person is drawn at random.
-We iterate through each population and complete all of the following steps:
-\begin{enum_tight}
-\item $k$ candidates are chosen at random from the population
-\item Voting system 1: {\it General Election} is run:
-    \begin{enum_tight}
-    \item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$.
-    \item each person votes for 1 candidate with lowest dissimilarity score.
-    \item candidate with most votes wins
-    \item dissimilarity score is calculated between every person and winner
-    \item average dissimilarity score and distribution of scores are recorded
-    \item mask $+= 1$
-    \item go back to 1. and repeat until mask $= d-1$.
-    \end{enum_tight}
-\item Voting system 2: {\it Ranked-Choice Voting} is run:
-    \begin{enum_tight}
-    \item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$
-    \item each person assigns a rank to every candidate with lowest dissimilarity score getting rank 1, next lowest getting rank 2, etc.
-    \begin{enum_tight}
-        \item if any candidate has $> 50\%$ of rank 1 votes, they win
-        \item otherwise, candidate with lowest number of rank 1 votes is dropped and every person's vote who ranked them as 1 is given to their rank 2 candidate
-        \item continue dropping lowest candidate and redistributing their votes until one candidate has $> 50\%$ of votes and they win
-    \end{enum_tight}
-    \item dissimilarity score is calculated between every person and winner
-    \item average dissimilarity score and distribution of scores are recorded
-    \item mask $+= 1$
-    \item go back to 1. and repeat until mask $= d-1$.
-    \end{enum_tight}
-\item Voting system 3: {\it Approval voting} is run:
-    \begin{enum_tight}
-    \item dissimilarity score is calculated for each person and each candidate based on unmasked dimensions, starting with mask $=0$
-    \item each person gives a vote to every candidate with dissimilarity score under threshold $a$.
-    \item candidate with most votes wins
-    \item dissimilarity score is calculated between every person and winner
-    \item average dissimilarity score and distribution of scores are recorded
-    \item mask $+= 1$
-    \item go back to 1. and repeat until mask $= d-1$.
-    \end{enum_tight}
-\end{enum_tight}
-
-
-
+\section{Experiments \& Methods}
+\label{sec:experiments}
+    \input{report_showerter-dberenberg.experiments.tex}
 
 
 
 \section{Results}
 \label{sec:results}
-\todo{not sure if we have one}
+    \input{report_showerter-dberenberg.results.tex}
+
 
 
 \section{Discussion and Conclusions}
 \label{sec:conclusion}
+    \input{report_showerter-dberenberg.conclusions.tex}
