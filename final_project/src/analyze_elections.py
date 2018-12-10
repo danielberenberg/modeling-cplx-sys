@@ -84,7 +84,7 @@ for t in transparencies:
     for i,V in enumerate(full_dists):
         plt.hist(full_dists[V][t],bins = 'auto',
                         color = cpairs[i][1], alpha = 0.5,
-                        label = V_systems2label[V])
+                        label = '{}, mean={}'.format(V_systems2label[V],round(np.mean(full_dists[V][t]),2)))
     plt.xlabel('Disagreeability with elected candidate')
     plt.ylabel('Count')
     plt.legend(loc='best')
