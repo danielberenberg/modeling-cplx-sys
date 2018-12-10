@@ -1,17 +1,17 @@
 """
-Complex Opinion in the Political Arena 
+Complex Opinion in the Political Arena
     - Measuring the interactions between campaign strategy, voting methodology, and
       election result happiness.
 
 Nodes are considered to be people in a voting society with a d-length vector of opinions O.
 
-Each singular opinion oᵢ∈ O is a value in [-1, 1] that represents how strongly 
+Each singular opinion oᵢ∈ O is a value in [-1, 1] that represents how strongly
 the individual feels about issue i.
     i close to -1 implies the individual strongly opposes the issue,
-    i close to  1 implies the individual strongly supports the issue, 
+    i close to  1 implies the individual strongly supports the issue,
     and i close to 0 implies a neutral opinion.
 
-Each oᵢ is sampled from a uniform distribution in [-1, 1]. 
+Each oᵢ is sampled from a uniform distribution in [-1, 1].
 """
 import pickle
 import sys, os
@@ -103,11 +103,11 @@ class Voter:
     @classmethod
     def reset_ids(cls):
         cls.ID = 0
-    
+
     @property
     def opinions(self):
         return self._opinions
-    
+
     @property
     def id(self):
         return self._id
@@ -126,7 +126,7 @@ class Voter:
         args:
             :candidate (Candidate)
         returns:
-            :the mean absolute error between the candidate's (exposed) opinion vector 
+            :the mean absolute error between the candidate's (exposed) opinion vector
              and the voter's own opinion
         """
         relevant_opinions = self.opinions[candidate.exposure]
@@ -134,7 +134,7 @@ class Voter:
 
     def happiness(self, candidate):
         """
-        return how happy a voter is with a candidate by computing the 
+        return how happy a voter is with a candidate by computing the
         mean absolute error between their opinion vectors
         """
         return sum(abs(self.opinions - candidate.opinions))/len(self.opinions)
@@ -144,7 +144,7 @@ class Candidate(Voter):
         """
         Initialize a Candidate, one such individual that has all the qualities
         of a Voter with the added attribute of a set of exposed opinions
-        
+
         args:
             :transparency (int) - the number of opinions exposed by the mask
         """
@@ -157,7 +157,7 @@ class Candidate(Voter):
         self._transparency = transparency
         # generate the opinion mask
         self._opinion_mask = [x in exposed_idx for x in idxs]
-    
+
     @property
     def exposure(self):
         return self._opinion_mask
@@ -208,7 +208,7 @@ def _get_voters(output_dir, n_voters, n_opinions, population_num):
             voter = Voter(n_opinions=n_opinions)
             voters.append(voter)
             pop_df.loc[i] = voter.to_list()
-        
+
         pop_df.to_csv(cache_file, index=False)
         return voters
 
@@ -219,16 +219,16 @@ def choose_candidates(population, transparency_level, n_candidates):
         :population (list of Voter) - the voting population
         :transparency_level (int)   - the number of exposed opinions
     returns:
-        :a list of candidates with the given transparency lvl 
+        :a list of candidates with the given transparency lvl
     """
     nominated = np.random.choice(population, n_candidates)
     return [Candidate(nom, transparency_level) for nom in nominated]
 
 def population_stream(output_dir, n_voters, n_opinions, n_populations=100):
     """
-    generate different populations of voters (size n_voters) with some number of opinions 
+    generate different populations of voters (size n_voters) with some number of opinions
     args:
-        :output_dir (str) - path to read/write populations from/to 
+        :output_dir (str) - path to read/write populations from/to
         :n_voters   (int) - number of voting individuals in the system
         :n_opinions (int) - number of opinions per indiv.
         :n_populations (int) - the number of populations to stream out
@@ -279,13 +279,13 @@ def ranked_choice_voting(population, nominees):
     all_ballots = []
     for voter in population:
         all_ballots.append(rank_sheet(voter, nominees))
-    
+
     return ranked_choice_tally_votes(all_ballots, nominees)
 
 def ranked_choice_tally_votes(ballot_box, nominees):
     """
     recursively searches for the candidate that is chosen by the ranked choice
-    voting algorithm. 
+    voting algorithm.
 
     args:
         :ballot_box (list of list of Candidate) - rankings for the population
@@ -299,7 +299,7 @@ def ranked_choice_tally_votes(ballot_box, nominees):
     max_prop = max(candidate2prop.values())
     if max_prop >= 0.51:
         max_candidate_id = list(filter(lambda c: candidate2prop[c] == max_prop, candidate2prop))[0]
-        max_candidate = id2candidate[max_candidate_id] 
+        max_candidate = id2candidate[max_candidate_id]
         return max_candidate
     else:
         min_prop = min(candidate2prop.values())
@@ -308,9 +308,9 @@ def ranked_choice_tally_votes(ballot_box, nominees):
             if ballot and ballot[0].id == min_candidate_id:
                 ballot.pop(0)
         return ranked_choice_tally_votes(ballot_box, nominees)
-        
+
 def calculate_shares(candidate2votes):
-    total_votes     = sum(candidate2votes.values()) 
+    total_votes     = sum(candidate2votes.values())
     candidate2share = {c:candidate2votes[c]/total_votes for c in candidate2votes}
 
     return candidate2share
@@ -322,10 +322,10 @@ def rank_sheet(voter, candidate_roster):
         :voter (Voter)
         :candidate_roster (list of Candidates)
     """
-    return sorted(candidate_roster, 
+    return sorted(candidate_roster,
                   key=lambda candidate:voter.agreeability(candidate))
 
-def approval_voting(population, nominees, num_approved=1):
+def approval_voting(population, nominees, max_disagreeability=1):
     raise NotImplementedError
 
 ##################################################################
@@ -338,7 +338,7 @@ def top_contender(voter, candidates):
 def general_election(population, nominees):
     """
     perform United States style voting by selecting the argmax of opinion
-    agreeability from the candidate pool for each voter and 
+    agreeability from the candidate pool for each voter and
     determining by popular vote the winner
 
     args:
@@ -351,23 +351,23 @@ def general_election(population, nominees):
     winner_id = max(votes.items(), key=lambda tup:tup[1])[0]
     winner = id2candidate[winner_id]
     return winner
-    
-    
+
+
 if __name__ == "__main__":
     args = parse_args().parse_args()
-    
+
     os.makedirs(os.path.join(args.output, "populations"), exist_ok=True)
     output_dir = os.path.join(args.output, args.voting_scheme)
     os.makedirs(output_dir, exist_ok=True)
-    
+
     scheme2scheme = {"general":general_election,
                      "ranked":ranked_choice_voting,
                      "approval":approval_voting}
 
     election_process = scheme2scheme[args.voting_scheme]
 
-    # if the voting scheme to test is ranked, then try election ranked voting for 
-    # 100 separate trials, for varying transparency levels, for varying #'s of ranks 
+    # if the voting scheme to test is ranked, then try election ranked voting for
+    # 100 separate trials, for varying transparency levels, for varying #'s of ranks
     for i, population in enumerate(population_stream(args.output, args.pop_size, args.vector_size)):
         for transparency_lvl in range(1, args.vector_size + 1):
             format_ = f"Population{i:03d}__V_{args.voting_scheme}__T{transparency_lvl:02d}__K{args.num_candidates:03d}.bin"
@@ -375,7 +375,7 @@ if __name__ == "__main__":
             nominees = choose_candidates(population, transparency_lvl, args.num_candidates)
             if not os.path.exists(filename):
                 elected  = election_process(population, nominees)
-                happiness_ratings = calculate_happiness(population, elected) 
+                happiness_ratings = calculate_happiness(population, elected)
 
                 with open(filename, 'wb') as pk:
                     pickle.dump(happiness_ratings, pk)
