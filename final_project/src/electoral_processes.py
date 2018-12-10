@@ -130,7 +130,7 @@ class Voter:
              and the voter's own opinion
         """
         relevant_opinions = self.opinions[candidate.exposure]
-        return sum(abs(relevant_opinions - candidate.views))/candidate.transparency
+        return sum(abs(relevant_opinions - candidate.opinions[candidate.exposure]))/candidate.transparency
 
     def happiness(self, candidate):
         """
@@ -154,7 +154,7 @@ class Candidate(Voter):
         # generate a mask of size `transparency`
         idxs = list(range(self.num_opinions))   # the indices to expose/not expose
         exposed_idx = np.random.choice(idxs, transparency, replace=False)  # choose the exposed ops
-
+        self._transparency = transparency
         # generate the opinion mask
         self._opinion_mask = [x in exposed_idx for x in idxs]
     
@@ -164,9 +164,8 @@ class Candidate(Voter):
 
     @property
     def transparency(self):
-        return len(self.views)
+        return self._transparency
 
-    @property
     def __str__(self):
         return f"Candidate(transparency={self.transparency}, n_ops={self.num_opinions})"
 
@@ -210,7 +209,7 @@ def _get_voters(output_dir, n_voters, n_opinions, population_num):
             voters.append(voter)
             pop_df.loc[i] = voter.to_list()
         
-        pop_df.to_csv(cache_file)
+        pop_df.to_csv(cache_file, index=False)
         return voters
 
 def choose_candidates(population, transparency_level, n_candidates):
