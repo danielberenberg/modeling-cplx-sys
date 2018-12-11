@@ -73,8 +73,8 @@ class Voter:
             :voter_id (int) - the id for this voter
         """
         if opinion_vector is None:
-            self._opinions = np.random.normal(0, 1, n_opinions)
-            #self._opinions = np.random.uniform(TOTAL_DISAGREE, TOTAL_AGREE, n_opinions)
+            #self._opinions = np.random.normal(0, 1, n_opinions)
+            self._opinions = np.random.uniform(TOTAL_DISAGREE, TOTAL_AGREE, n_opinions)
         else:
             self._opinions = np.array(opinion_vector)
 

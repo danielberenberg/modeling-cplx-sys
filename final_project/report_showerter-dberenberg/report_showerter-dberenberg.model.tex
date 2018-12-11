@@ -1,10 +1,13 @@
 %%%%%%%%%% Model Set-up, Assumptions, and Parameters
+We define ``the complex opinion of voter $v$'' $o^{(v)}$ as a real-valued vector of of $d$ components $o_{i} \in [-1,1]$, where $o_{i} \approx 1$ implies that $v$ has strong support towards issue $i$ and $o_{i} \approx -1$ implies the opposite. 
+This encapsulates the notion (and assumption) that an individual's final vote for a candidate is parameterized by the interactions
+between their views on several different issues.
 
 Our model is non-spatial, agent-based, and not temporally influenced.
-It is stochastically set up, but deterministically run.
-It takes a random population of size $N$ where each person has an opinion vector $o^{(p)} \forall p \in N$ of dimension $d$.
-Each dimension of $o^{(p)}$ represents a distinct topic on which a person can have an opinion.
-\Assumpt{1}{Each dimension of $o^{(p)}$ (each topic) are independent of one another $\text{\bf Pr}(o^{(p)}_i | o^{(p)}_j) = o^{(p)}_i $  $\forall i,j \in d$.}
+Complex opinions are stochastically generated, yet each voting algorithm is deterministically run.
+The model (the combination of voter opinions and election scheme) takes a random population of size $N$ where each person $p$ 
+has an opinion vector $o^{(p)}$ of dimension $d$.
+\Assumpt{1}{We consider each dimension (issue) of $o^{(p)}$ to be independent of one another $\text{\bf Pr}(o^{(p)}_i | o^{(p)}_j) = o^{(p)}_i $  $\forall i,j \in d$.}
 This means that the sampling method for an individual's opinions is consistent across the topic space and the distribution from which opinion $o_i$ is chosen is not influenced by any other opinion already drawn.
 The opinion vector $o^{(p)}$ is generated for every person, $p$ in the population, $N$ at random, where each $o^{(p)}_i$ is drawn from the uniform distribution, U$(-1,1)$.
 
@@ -26,7 +29,7 @@ where $o^{c_w}$ is the full opinion vector of the candidate that won the electio
 Since 2 is the maximum dissimilarity score that can happen between two opinion vectors, happiness is renormalized as 0 being not at all happy and 1 being as happy as possible.
 
 \subsection{Opinion transparency and campaign strategies}
-In order to model the effect of campaign strategies and the realistic scenario where every person in the population does not know every opinion of every candidate, we added an opinion transparency parameter to the model.
+In order to model the effect of campaign strategies and the realistic scenario where every person in the population does not know every opinion of every candidate, we add an opinion transparency parameter to the model.
 
 For each population, each voting system is run $d-1$ times, starting where all people can ``see'' and base their vote(s) off of each candidate's full opinion vector.
 Each subsequent time the voting system is run, the candidates ``mask'' 1 more dimension of their vector than during the previous iteration, making them $d-1$ less transparent.

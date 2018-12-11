@@ -6,7 +6,7 @@
 %Control: page (0) single
 %Control: year (1) truncated
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{1}%
+\begin{thebibliography}{2}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -50,6 +50,14 @@
 \providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
 \let\auto@bib@innerbib\@empty
 %</preamble>
+\bibitem [{\citenamefont {Clifford}\ and\ \citenamefont
+  {Sudbury}(1973)}]{votermodel}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Clifford}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Sudbury}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Biometrika}\ }\textbf {\bibinfo {volume} {60}},\ \bibinfo {pages} {581}
+  (\bibinfo {year} {1973})}\BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Hoyer}\ and\ \citenamefont
   {Mayer}(1974)}]{hoyer1974comparing}%
   \BibitemOpen
