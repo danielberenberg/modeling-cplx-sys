@@ -127,7 +127,7 @@ class Voter:
         return sum(abs(self.opinions - candidate.opinions))/len(self.opinions)
 
 class Candidate(Voter):
-    def __init__(self, voter, transparency):
+    def __init__(self, voter, transparency, mask):
         """
         Initialize a Candidate, one such individual that has all the qualities
         of a Voter with the added attribute of a set of exposed opinions
@@ -139,11 +139,9 @@ class Candidate(Voter):
                                         opinion_vector=voter.opinions,
                                         voter_id=voter.id)
         # generate a mask of size `transparency`
-        idxs = list(range(self.num_opinions))   # the indices to expose/not expose
-        exposed_idx = np.random.choice(idxs, transparency, replace=False)  # choose the exposed ops
         self._transparency = transparency
         # generate the opinion mask
-        self._opinion_mask = [x in exposed_idx for x in idxs]
+        self._opinion_mask = mask
 
     @property
     def exposure(self):
@@ -209,7 +207,10 @@ def choose_candidates(population, transparency_level, n_candidates):
         :a list of candidates with the given transparency lvl
     """
     nominated = np.random.choice(population, n_candidates)
-    return [Candidate(nom, transparency_level) for nom in nominated]
+    idxs = list(range(nominated[0].num_opinions))   # the indices to expose/not expose
+    exposed_idx = np.random.choice(idxs, transparency_level, replace=False)  # choose the exposed ops
+    mask = [int(idx in exposed_idx) for idx in idxs]
+    return [Candidate(nom, transparency_level, mask) for nom in nominated]
 
 def population_stream(output_dir, n_voters, n_opinions, n_populations=100):
     """
