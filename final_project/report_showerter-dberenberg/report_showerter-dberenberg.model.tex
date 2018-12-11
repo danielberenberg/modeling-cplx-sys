@@ -27,8 +27,10 @@ Since 2 is the maximum dissimilarity score that can happen between two opinion v
 
 \subsection{Opinion transparency and campaign strategies}
 In order to model the effect of campaign strategies and the realistic scenario where every person in the population does not know every opinion of every candidate, we added an opinion transparency parameter to the model.
+
 For each population, each voting system is run $d-1$ times, starting where all people can ``see'' and base their vote(s) off of each candidate's full opinion vector.
 Each subsequent time the voting system is run, the candidates ``mask'' 1 more dimension of their vector than during the previous iteration, making them $d-1$ less transparent.
+
 Each candidate also chooses to mask different components of their vector, symbolizing a campaign strategy, where the candidates are attempting to leverage certain topics and hide others from the general population.
 In our algorithm, this choice is made by each candidate in a random manner, but with each iteration they add an additional dimension to the mask while still hiding the previously hidden dimensions.
 As an example for $k = 3, d = 6$, on iteration 4, 3 components will be masked:
@@ -45,3 +47,6 @@ o^{(c3)} = \begin{bmatrix}0.58 \\ \Box \\ 0.45 \\ \Box \\ \Box \\ \Box  \end{bma
 \end{align*}
 With these masks, the dissimilarity scores are calculated only on the visible components of each candidates opinion vector, but the final end voter satisfaction is calculated based on the full opinion vector dissimilarity.
 Continuing from the above example, if person $p1$ has opinion vector, $$o^{(p1)}=\begin{bmatrix}0.05\\0.50\\-0.99\\-0.33\\0.89\\0.01\end{bmatrix}$$  on iteration 4, their vote for the general election would be cast for candidate 2, since their dissimilarity score is the lowest based off of the visible components.
+
+It could, and likely will, occur where the candidate that a person votes for (has minimum dissimilarity to) based off the unmasked vectors might not actually be the least similar to them, based off of the full vectors of all candidates.
+Since all of this is implemented randomly, there is not actual ``strategy'' occurring and thus {\it bad} strategies will likely be implemented.
