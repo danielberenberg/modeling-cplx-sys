@@ -1,6 +1,6 @@
-Here we compare the performance of each voting algorithm with respect to the average happiness achieved by the elected candidate and
-the effect of opinion transparency. \newline
-\indent In Figure~\ref{fig:satisfaction_hists}, we show for varying threshold values the distributions of satisfaction for each
+Here we compare the performance of each voting algorithm with respect to the average happiness achieved by the elected candidate and 
+the effect of opinion transparency. \par
+In Figure~\ref{fig:satisfaction_hists}, we show for varying threshold values the distributions of satisfaction for each
 voting algorithm. This demonstrates the efficacy of each voting scheme with respect to satisfaction. We see that plurality
 is shown to have the minimum happiness in all three scenarios with approval based voting tending towards a higher mean.
 Although the differences in mean happiness are slight, we believe that the fact that these distributions are realized over
@@ -17,10 +17,19 @@ than plurality.
 The notion of the plurality method's ill-performing nature in finding the most utilitarian candidate
 is further indicated by visualizing voter satisfaction as a function of opinion transparency in Figure~\ref{fig:avghapp_by_transparency}.
 Here we see that plurality clearly performs the worst among the three, barely overlapping in standard error with the latter two.
-Meanwhile, ranked-choice and approval-based voting show a higher trend.
+Meanwhile, ranked-choice and approval-based voting show a higher trend.\par 
+Figure~\ref{fig:avg_happ_by_transparency} further reveals evidence of the effect of 
+transparency of voting systems in the complex opinion space. The figure suggests the 
+intuitive claim that a candidate's revealing their full position in opinion space
+results in a increase in voter satisfaction post election.\par
+We can further draw the conclusion that if candidates are imagined to stop at nothing to attain office,
+their best case scenario to win an election is the one where they reveal the least about themselves,
+leaving the vote up to uniform chance. This claim clearly comes with various caveats and may be biased
+through the model.
+
 \begin{figure}[h!]
 \includegraphics[width=0.5\textwidth]{../src/figs/new/avghapp_transparency.pdf}
+\label{fig:avghapp_by_transparency}
 \caption{Average citizen satisfaction for all populations for each voting system and transparency level shown
     with 95\% confidence interval of standard error.}
-\label{fig:avghapp_by_transparency}
 \end{figure}
