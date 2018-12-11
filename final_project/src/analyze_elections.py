@@ -64,9 +64,9 @@ if input('Would you like to plot transparency vs avg happiness? (y/Y) ').upper()
                  color=cpairs[i][0],alpha=0.7,
                  label='Avg. happiness for {} Voting'.format(V_systems2label[V]))
         plt.fill_between(transparencies,t_avgs,[u+1.96*s for u,s in zip(t_avgs,t_std)],
-                         alpha=0.5,color=cpairs[i][1])
+                         alpha=0.4,color=cpairs[i][1])
         plt.fill_between(transparencies,t_avgs,[u-1.96*s for u,s in zip(t_avgs,t_std)],
-                         alpha=0.5,color=cpairs[i][1],
+                         alpha=0.4,color=cpairs[i][1],
                          label='95\% CI for {}'.format(V_systems2label[V]))
     plt.ylim(0.6,0.9)
     plt.ylabel('Avg. Happiness over 100 Populations')
