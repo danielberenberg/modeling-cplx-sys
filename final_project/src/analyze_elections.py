@@ -29,7 +29,7 @@ V_systems2label = {'general':"Plurality",'ranked':"Ranked-Choice",'approval':"Ap
 happ_dist_files = {}
 #uncomment once all voting systems are run
 for V in V_systems:
-    happ_dist_files[V] = glob.glob('ElectoralProcesses__D3/{}/*'.format(V))
+    happ_dist_files[V] = glob.glob('ElectoralProcesses/{}/*'.format(V))
 
 transparencies = [1,2,3,4,5,6,7]
 happ_avgs = {V:{T:[] for T in transparencies} for V in happ_dist_files}
