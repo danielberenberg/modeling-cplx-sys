@@ -28,9 +28,8 @@ V_systems = ['general','ranked','approval']
 V_systems2label = {'general':"Plurality",'ranked':"Ranked-Choice",'approval':"Approval"}
 happ_dist_files = {}
 #uncomment once all voting systems are run
-#for V in V_systems:
-#    happ_dist_files[V] = glob.glob('ElectoralProcesses/{}/*'.format(V))
-happ_dist_files['general'] = glob.glob('ElectoralProcesses/general/*')
+for V in V_systems:
+    happ_dist_files[V] = glob.glob('ElectoralProcesses__D3/{}/*'.format(V))
 
 transparencies = [1,2,3,4,5,6,7]
 happ_avgs = {V:{T:[] for T in transparencies} for V in happ_dist_files}
@@ -59,14 +58,14 @@ for i,V in enumerate(happ_avgs):
     t_avgs = [np.mean(happ_avgs[V][t]) for t in transparencies]
     t_std = [np.std(happ_avgs[V][t]) for t in transparencies]
     plt.scatter(transparencies,t_avgs,
-                marker = 'x',color= cpairs[i][0],alpha=0.7,zorder=4)
+                marker='x',color=cpairs[i][0],alpha=0.7,zorder=4)
     plt.plot(transparencies,t_avgs,
-             color= cpairs[i][0],alpha=0.7,
+             color=cpairs[i][0],alpha=0.7,
              label='Avg. happiness for {} Voting'.format(V_systems2label[V]))
     plt.fill_between(transparencies,t_avgs,[u+1.96*s for u,s in zip(t_avgs,t_std)],
-                     alpha=0.5,color= cpairs[i][1])
+                     alpha=0.5,color=cpairs[i][1])
     plt.fill_between(transparencies,t_avgs,[u-1.96*s for u,s in zip(t_avgs,t_std)],
-                     alpha=0.5,color= cpairs[i][1],
+                     alpha=0.5,color=cpairs[i][1],
                      label='95\% CI for {}'.format(V_systems2label[V]))
 plt.ylim(0.5,1)
 plt.ylabel('Avg. Happiness over 100 Populations')

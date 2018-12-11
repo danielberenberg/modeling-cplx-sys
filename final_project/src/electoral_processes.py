@@ -18,7 +18,9 @@ import sys, os
 import argparse
 import numpy as np
 import pandas as pd
+from functools import reduce
 from collections import Counter
+from itertools import combinations
 
 TOTAL_DISAGREE = -1
 TOTAL_AGREE = 1
@@ -46,26 +48,11 @@ def parse_args():
                         help="Number of opinions per individual",
                         default=10)
 
-
-    parser.add_argument("-v","--voting-scheme",
-                        dest="voting_scheme",
-                        help="the type of voting scheme to test; "+
-                             "voting scheme will test for tolerance values between 1 and num_opinons",
-                        choices=["ranked","approval", "general"])
-
     parser.add_argument("-k","--num-candidates",
                         dest="num_candidates",
                         type=intgt0,
                         help="the number of candidates per election",
                         default=10)
-
-    #parser.add_argument("-t","--opinion-transparency",
-    #                    dest="mask_size",
-    #                    help="the number of exposed opinions per candidate, a value in (0, d], "+
-    #                         "where d is the opinion vector size "+
-    #                         "specifying `all` or a value greater than the number of opinions "+
-    #                         "will result in the mask being length d",
-    #                    default='all')
 
     parser.add_argument("-o","--output-directory",
                         dest="output",
@@ -325,10 +312,46 @@ def rank_sheet(voter, candidate_roster):
     return sorted(candidate_roster,
                   key=lambda candidate:voter.agreeability(candidate))
 
-def approval_voting(population, nominees, max_disagreeability=1):
-    raise NotImplementedError
+###################################################################
+################# approval voting section #########################
+###################################################################
+def approval_voting(pop, noms, mx_disagree=1):
+    """
+    implements approval based voting
+    each Voter in the population votes for all of the candidates with 
+    a disagreeability value <= max_disagreeability
 
-##################################################################
+    args:
+        :pop (list of Voter)
+        :noms (list of Candidate)
+        :mx_disagree (int)
+    returns:
+        :the winner of the election
+    """
+    # :)
+    ballot_box = []
+    for voter in pop: 
+        ballot_box.extend([c.id for c in approved(voter, noms)])
+    id2candidate = {c.id:c for c in noms}
+    return id2candidate[Counter(ballot_box).most_common(1)[0][0]]
+    
+
+
+def approved(voter, nominees, max_disag=1):
+    """
+    return the approved candidates of the voter
+
+    args:
+        :voter (Voter)
+        :nominess (list of Candidate)
+        :max_disagg (int)
+    returns:
+        :list of Candidate
+    """
+    return [candidate for candidate in nominees if voter.agreeability(candidate) <= max_disag]
+
+
+###################################################################
 ################## general voting section #########################
 ###################################################################
 
@@ -338,8 +361,6 @@ def top_contender(voter, candidates):
 def general_election(population, nominees):
     """
     perform United States style voting by selecting the argmax of opinion
-    agreeability from the candidate pool for each voter and
-    determining by popular vote the winner
 
     args:
         :population (list of Voter)
@@ -357,33 +378,42 @@ if __name__ == "__main__":
     args = parse_args().parse_args()
 
     os.makedirs(os.path.join(args.output, "populations"), exist_ok=True)
-    output_dir = os.path.join(args.output, args.voting_scheme)
-    os.makedirs(output_dir, exist_ok=True)
-
-    scheme2scheme = {"general":general_election,
-                     "ranked":ranked_choice_voting,
-                     "approval":approval_voting}
-
-    election_process = scheme2scheme[args.voting_scheme]
+    for etype in ["general","ranked","approval"]:
+        os.makedirs(os.path.join(args.output, etype), exist_ok=True)
 
     # if the voting scheme to test is ranked, then try election ranked voting for
     # 100 separate trials, for varying transparency levels, for varying #'s of ranks
-    for i, population in enumerate(population_stream(args.output, args.pop_size, args.vector_size)):
-        for transparency_lvl in range(1, args.vector_size + 1):
-            format_ = f"Population{i:03d}__V_{args.voting_scheme}__T{transparency_lvl:02d}__K{args.num_candidates:03d}.bin"
-            filename = os.path.join(output_dir, format_)
+    match_df = pd.DataFrame(columns=list(combinations(["general","ranked","approval"], 2)))
+    for transparency_lvl in range(1, args.vector_size + 1):
+        for i, population in enumerate(population_stream(args.output, args.pop_size, args.vector_size)):
             nominees = choose_candidates(population, transparency_lvl, args.num_candidates)
-            if not os.path.exists(filename):
-                elected  = election_process(population, nominees)
-                happiness_ratings = calculate_happiness(population, elected)
+            scheme2winner = {scheme:[] for scheme in ("general","ranked","approval")}
+            for election_process, voting_scheme in zip((general_election, ranked_choice_voting, approval_voting),
+                                                       ("general","ranked","approval")):
+    
+                format_ = f"Population{i:03d}__V_{voting_scheme}__T{transparency_lvl:02d}__K{args.num_candidates:03d}.bin"
+                output_dir = os.path.join(args.output, voting_scheme)
+                filename = os.path.join(output_dir, format_)
+                if not os.path.exists(filename):
+                    elected  = election_process(population, nominees)
+                    happiness_ratings = calculate_happiness(population, elected)
+                    scheme2winner[voting_scheme].append(elected.id)
+                    with open(filename, 'wb') as pk:
+                        pickle.dump(happiness_ratings, pk)
 
-                with open(filename, 'wb') as pk:
-                    pickle.dump(happiness_ratings, pk)
+                    print(f"\r{80 * ' '}\rTransparency={transparency_lvl}, "+
+                          f"population={i:03d}, "+
+                          f"avg_happiness={np.mean(happiness_ratings):0.2f}, "+
+                          f"VotingScheme={voting_scheme}",
+                          end='',
+                          flush=True)
 
-                print(f"\r{80 * ' '}\rTransparency={transparency_lvl}, "+
-                      f"population={i:03d}, "+
-                      f"avg_happiness={np.mean(happiness_ratings):0.2f}",
-                      end='',
-                      flush=True)
+            # compute the number of times each scheme arrived at the same conclusion
+        comb2ct = {}
+        for comb in combinations(["general","ranked","approval"],2):
+            i, j = comb
+            comb2ct[comb] = len(list(filter(lambda x1x2:x1x2[0] == x1x2[1], list(zip(scheme2winner[i], scheme2winner[j])))))/100
 
+        match_df.loc[transparency_lvl] = [comb2ct[col] for col in match_df.columns] 
         Voter.reset_ids()
+    match_df.to_csv(os.path.join(args.output, "winners.csv"),index=False)
