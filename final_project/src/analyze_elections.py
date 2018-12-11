@@ -1,5 +1,6 @@
 ############################ IMPORTS #############################
 import numpy as np
+import pandas as pd
 import pickle
 import glob
 
@@ -15,7 +16,7 @@ rc('figure', figsize=(5.5,3.5))
 rc('text', usetex=True)
 #rc('xtick.major', pad=10) # xticks too close to border!
 rc('xtick', labelsize=9)
-rc('ytick', labelsize=9)
+rc('ytick', labelsize=8)
 rc('legend',**{'fontsize':9})
 
 import warnings
@@ -100,12 +101,12 @@ if input('Would you like to plot transparency vs avg happiness? (y/Y) ').upper()
 # One plot for every transparency :O
 if input('Would you like to plot the full distributions for all happiness? (y/Y) ').upper() == 'Y':
     fig, axarr = plt.subplots(3,1, sharex=True)
-    letter_subplots(axarr, xoffset=3*[-0.05])
+    letter_subplots(axarr, xoffset=3*[-0.08])
     axarr[0].set_xlim(minavg - 0.01,maxavg + 0.01)
     axarr[2].set_xlabel("Avg. Satisfaction with elected candidate per population")
     for (ax,t) in zip(axarr, [1,4,7]):
         for i,V in enumerate(full_dists):
-            ax.hist(happ_avgs[V][t],bins='auto',
+            ax.hist(happ_avgs[V][t],bins=10,
                     color=cpairs[i][1], histtype='step',
                     label='{}'.format(V_systems2label[V])) #round(np.mean(full_dists[V][t]),2)))
             ax.set_ylabel('Count')
@@ -131,3 +132,7 @@ if input('Would you like to plot the full distributions for all happiness? (y/Y)
     axarr[2].legend(frameon=True, loc='upper left')
     plt.savefig('figs/new/satisfaction-hist_allpeep.pdf'.format(t),bbox_inches='tight')
     plt.clf()
+
+if input('Would you like to plot the outcome similarity map for all elections and transparencies? (y/Y) ').upper() == 'Y':
+    same_winners = pd.read_csv('ElectoralProcesses/same_winners.csv')
+    plt.figure()
