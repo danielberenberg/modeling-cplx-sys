@@ -29,16 +29,18 @@ V_systems2label = {'general':"Plurality",'ranked':"Ranked-Choice",'approval':"Ap
 happ_dist_files = {}
 #uncomment once all voting systems are run
 for V in V_systems:
-    happ_dist_files[V] = glob.glob('archive/{}/*'.format(V))
+    happ_dist_files[V] = glob.glob('ElectoralProcesses/{}/*'.format(V))
 
 transparencies = [1,2,3,4,5,6,7]
 happ_avgs = {V:{T:[] for T in transparencies} for V in happ_dist_files}
-full_dists = {V:{T:np.zeros(10000) for T in transparencies} for V in happ_dist_files}
+full_dists = {V:{T:[] for T in transparencies} for V in happ_dist_files}
+allhappavgs = []
+allhapps = []
 for Vsys in happ_dist_files:
     for t in transparencies:
+        popnum = 0
         print('{}_T{:02}_'.format(Vsys,t))
         for fname in [f for f in happ_dist_files[Vsys] if '_T{:02}_'.format(t) in f]:
-            print(fname)
             with open(fname,'rb') as file:
                 diss_dist = np.array(pickle.load(file))
                 # calculate happines from dissatisfaction:
@@ -47,13 +49,20 @@ for Vsys in happ_dist_files:
                 # store average happiness & std for every population:
                 happ_mean = np.mean(happ_dist)
                 happ_avgs[Vsys][t].append(happ_mean)
+                allhappavgs.append(happ_mean)
 
                 # store every happiness score for every population:
                 full_dists[Vsys][t] += happ_dist
+                allhapps += happ_dist
+                popnum += 1
 
-for v in full_dists:
-    for t in full_dists[v]:
-        full_dists[v][t] /= 100
+
+print(popnum)
+minavg = np.min(allhappavgs)
+maxavg = np.max(allhappavgs)
+minhapp = np.min(allhapps)
+maxhapp = np.max(allhapps)
+
 
 cpairs = [('darkorange','gold'),('crimson','plum'),('darkslategrey','paleturquoise')]
 # Plot candidate transparency vs avg happiness for each voting system:
@@ -63,7 +72,7 @@ if input('Would you like to plot transparency vs avg happiness? (y/Y) ').upper()
         t_avgs = np.array([np.mean(happ_avgs[V][t]) for t in transparencies])
         # computing the standard error instead of std because we're concerned with the
         # range of values the mean of the means can take on
-        t_std_err_ci = 1.96*(np.array([np.std(happ_avgs[V][t])for t in transparencies])/10)
+        t_std_err_ci = 1.96*(np.array([np.std(happ_avgs[V][t])for t in transparencies])/np.sqrt(popnum))
         plt.scatter(transparencies,t_avgs,
                     marker='x',color=cpairs[i][0],alpha=0.7,zorder=4)
         plt.plot(transparencies,t_avgs,
@@ -78,22 +87,39 @@ if input('Would you like to plot transparency vs avg happiness? (y/Y) ').upper()
         #plt.fill_between(transparencies,t_avgs,[u-1.96*s for u,s in zip(t_avgs,t_std)],
         #                 alpha=0.4,color=cpairs[i][1],
         #                 label='95\% CI for {}'.format(V_systems2label[V]))
-    plt.ylim(0.66,0.7)
+    plt.ylim(np.min(t_avgs)-np.max(t_std_err_ci)-0.01,np.max(t_avgs)+np.max(t_std_err_ci)+0.005)
     plt.ylabel(r"Avg. Satisfaction")
     plt.xlabel('Opinion Transparency')
-    plt.legend(loc='best',frameon=True)
+    plt.legend(loc='upper left',frameon=True)
     #plt.title('End-of-Election Happiness vs. Candidate Transparency \nfor each Voting System')
-    plt.savefig('figs/avghapp_transparency.pdf',bbox_inches='tight')
+    plt.savefig('figs/new/avghapp_transparency.pdf',bbox_inches='tight')
     plt.clf()
 
 
 # Plot full distributions of happ scores of all populations for each V sys
 # One plot for every transparency :O
-if input('Would you like to plot the full distributions for all pop happiness? (y/Y) ').upper() == 'Y':
+if input('Would you like to plot the full distributions for all happiness? (y/Y) ').upper() == 'Y':
     fig, axarr = plt.subplots(3,1, sharex=True)
     letter_subplots(axarr, xoffset=3*[-0.05])
-    axarr[0].set_xlim(0.62, 0.72)
-    axarr[2].set_xlabel("Satisfaction with elected candidate")
+    axarr[0].set_xlim(minavg - 0.01,maxavg + 0.01)
+    axarr[2].set_xlabel("Avg. Satisfaction with elected candidate per population")
+    for (ax,t) in zip(axarr, [1,4,7]):
+        for i,V in enumerate(full_dists):
+            ax.hist(happ_avgs[V][t],bins='auto',
+                    color=cpairs[i][1], histtype='step',
+                    label='{}'.format(V_systems2label[V])) #round(np.mean(full_dists[V][t]),2)))
+            ax.set_ylabel('Count')
+        #ax.set_title('$T = {}$'.format(t))
+        ax.text(0.99,0.05, "$T={}$".format(t), transform=ax.transAxes, ha='right')
+    axarr[2].legend(frameon=True, loc='upper left')
+    plt.savefig('figs/new/satisfaction-hist_avgperpop.pdf'.format(t),bbox_inches='tight')
+    plt.clf()
+
+
+    fig, axarr = plt.subplots(3,1, sharex=True)
+    letter_subplots(axarr, xoffset=3*[-0.05])
+    axarr[0].set_xlim(0.45,0.95)
+    axarr[2].set_xlabel("Satisfaction with elected candidate per person")
     for (ax,t) in zip(axarr, [1,4,7]):
         for i,V in enumerate(full_dists):
             ax.hist(full_dists[V][t],bins='auto',
@@ -102,6 +128,6 @@ if input('Would you like to plot the full distributions for all pop happiness? (
             ax.set_ylabel('Count')
         #ax.set_title('$T = {}$'.format(t))
         ax.text(0.99,0.05, "$T={}$".format(t), transform=ax.transAxes, ha='right')
-    axarr[0].legend(frameon=True, loc='upper left')
-    plt.savefig('figs/disagreeability-hist_T{:02}.pdf'.format(t),bbox_inches='tight')
+    axarr[2].legend(frameon=True, loc='upper left')
+    plt.savefig('figs/new/satisfaction-hist_allpeep.pdf'.format(t),bbox_inches='tight')
     plt.clf()
