@@ -134,5 +134,24 @@ if input('Would you like to plot the full distributions for all happiness? (y/Y)
     plt.clf()
 
 if input('Would you like to plot the outcome similarity map for all elections and transparencies? (y/Y) ').upper() == 'Y':
-    same_winners = pd.read_csv('ElectoralProcesses/same_winners.csv')
+    import pandas as pd
+    same_winners = pd.read_csv('ElectoralProcesses/same_winners.csv').transpose()
+    labels = []
+    for s in same_winners.index:
+        v1 = s.split(' ')[0]
+        v1 = v1.strip("(),'’")
+        v2 = s.split(' ')[1]
+        v2 = v2.strip("(),'’")
+        labels.append(V_systems2label[v1]+', \n'+V_systems2label[v2])
     plt.figure()
+    plt.imshow(same_winners)
+    plt.yticks([0,1,2],labels)
+    plt.xlabel('transparency level')
+    #plt.colorbar(orientation='horizontal')
+    for i in range(len(same_winners.index)):
+        for j in range(len(same_winners.columns)):
+            plt.text(j, i, str(same_winners.loc[same_winners.index[i], same_winners.columns[j]])+'\%',
+                           ha="center", va="center", color="w")
+    plt.title('Percent of Same Candidate Winning \nper Voting System Pair and Transparency Level')
+    plt.savefig('../report_showerter-dberenberg/figs/same_winners.pdf',bbox_inches='tight')
+    plt.clf()
